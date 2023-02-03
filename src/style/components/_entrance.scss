@@ -1,0 +1,61 @@
+.entrance {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  &__bg {
+    margin: 0 auto;
+    background: url('./assets/img/indexField.png');
+    width: 747px;
+    height: 747px;
+  }
+  &__sign {
+    position: absolute;
+    background: url('./assets/img/monopolySign.png');
+    width: 476px;
+    height: 475px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &__frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 81px;
+  }
+  &__btn {
+    position: absolute;
+    width: 160px;
+    height: 95px;
+    transform: rotate(45deg);
+    background-color: transparent;
+    border: 4px solid black;
+    cursor: pointer;
+    @include font(2.4rem, 2.4rem, 800);
+    @extend %transition;
+    &:hover {
+      transform: rotate(0deg);
+    }
+  }
+  .login {
+    top: 150px;
+    left: 470px;
+  }
+  .registrate {
+    top: 490px;
+    left: 140px;
+  }
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 70px;
+  }
+  &__button {
+    width: 60%;
+    margin: 0 auto;
+    &_small {
+      width: 13%;
+    }
+  }
+}
