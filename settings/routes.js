@@ -8,4 +8,5 @@ module.exports = (app) => {
 
   app.route('/api/users').get(usersController.users);
   app.route('/api/users/register').post(usersController.create);
+  app.route('/api/users/autorization').get(usersController.autorization);
 };

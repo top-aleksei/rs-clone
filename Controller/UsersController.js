@@ -45,3 +45,37 @@ exports.create = (req, res) => {
     }
   );
 };
+
+exports.autorization = (req, res) => {
+  db.query(
+    "SELECT `id`, `name`, `password` FROM `players` WHERE `name` = '" +
+      req.body.name +
+      "'",
+    (error, rows, fields) => {
+      if (error) {
+        response.status(400, error, res);
+      } else if (rows.length < 1) {
+        response.status(404, `User not found`, res);
+      } else {
+        const row = JSON.parse(JSON.stringify(rows));
+        row.map((rw) => {
+          const password = bcrypt.compareSync(req.body.password, rw.password);
+          if (password) {
+            response.status(
+              200,
+              {
+                id: rw.id,
+                name: rw.name,
+                password: rw.password,
+              },
+              res
+            );
+          } else {
+            response.status(401, `Wrong password`, res);
+          }
+          return true;
+        });
+      }
+    }
+  );
+};
