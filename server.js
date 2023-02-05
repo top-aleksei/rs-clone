@@ -107,19 +107,15 @@ function broadcast(req) {
               action: games[gameId].action,
             },
           };
-        } else {
-          res = {
-            event: 'error',
-            message: 'Dont your move',
-          };
         }
+
         break;
       case 'end':
         if (req.payload.id === games[gameId].whoGo) {
           games[gameId].action = 'startGo';
           activePlayer += 1;
           activePlayer =
-            activePlayer > games[gameId].players.length ? 0 : activePlayer;
+            activePlayer === games[gameId].players.length ? 0 : activePlayer;
           games[gameId].whoGo = games[gameId].players[activePlayer].id;
           res = {
             event: 'going',
