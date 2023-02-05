@@ -42,6 +42,7 @@ function initGames(ws, gameId) {
     games[gameId] = {};
     games[gameId].canPlay = false;
     games[gameId].players = [ws];
+    let activePlayer = null;
   } else if (games[gameId] && games[gameId].players?.length < 2) {
     games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
@@ -54,8 +55,9 @@ function initGames(ws, gameId) {
     games[gameId].players = [...games[gameId].players, ws];
     if (games[gameId].players?.length === 3) {
       games[gameId].canPlay = true;
-      games[gameId].whoGo = games[gameId].players[0];
-      games[gameId].action = 'go';
+      games[gameId].action = 'startGo';
+      activePlayer = 0;
+      games[gameId].whoGo = games[gameId].players[0].id;
     }
   } else if (games[gameId] && games[gameId].players?.length > 2) {
     if (
@@ -67,8 +69,7 @@ function initGames(ws, gameId) {
       );
       games[gameId].players = [...games[gameId].players, ws];
       games[gameId].canPlay = true;
-      games[gameId].whoGo = games[gameId].players[0];
-      games[gameId].action = 'go';
+      games[gameId].action = 'startGo';
     } else ws.send('Room is full');
   }
 }
@@ -86,16 +87,58 @@ function broadcast(req) {
             success: true,
             players: games[gameId].players.map((client) => client.nickname),
             canPlay: games[gameId].canPlay,
+            whoGo: games[gameId].whoGo,
+            action: games[gameId].action,
           },
         };
         break;
       case 'going':
-        res = 'trying to go';
+        if (req.payload.id === games[gameId].whoGo) {
+          games[gameId].action = 'finishGo';
+          //TODO: добавить очки количество ходов игроку
+          res = {
+            event: 'going',
+            payload: {
+              gameId: gameId,
+              success: true,
+              players: games[gameId].players.map((client) => client.nickname),
+              canPlay: games[gameId].canPlay,
+              whoGo: games[gameId].whoGo,
+              action: games[gameId].action,
+            },
+          };
+        } else {
+          res = {
+            event: 'error',
+            message: 'Dont your move',
+          };
+        }
+        break;
+      case 'end':
+        if (req.payload.id === games[gameId].whoGo) {
+          games[gameId].action = 'startGo';
+          activePlayer += 1;
+          activePlayer =
+            activePlayer > games[gameId].players.length ? 0 : activePlayer;
+          games[gameId].whoGo = games[gameId].players[activePlayer].id;
+          res = {
+            event: 'going',
+            payload: {
+              gameId: gameId,
+              success: true,
+              players: games[gameId].players.map((client) => client.nickname),
+              canPlay: games[gameId].canPlay,
+              whoGo: games[gameId].whoGo,
+              action: games[gameId].action,
+            },
+          };
+        }
         break;
       default:
         res = {
           event: 'unknown',
         };
+        break;
     }
     client.send(JSON.stringify(res));
   });
