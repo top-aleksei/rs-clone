@@ -29,6 +29,9 @@ function start() {
       if (req.event == 'connect') {
         wsClient.id = req.payload.id;
         wsClient.nickname = req.payload.name;
+        wsClient.position = 1; //TODO: поставить посицию какую надо
+        wsClient.money = 1000; //TODO: поставить денег сколько надо
+        wsClient.owner = []; //TODO:это будет тут храниться чем владеет
         initGames(wsClient, req.payload.gameId);
       }
 
@@ -42,7 +45,7 @@ function initGames(ws, gameId) {
     games[gameId] = {};
     games[gameId].canPlay = false;
     games[gameId].players = [ws];
-    let activePlayer = null;
+    games[gameId].activePlayer = null;
   } else if (games[gameId] && games[gameId].players?.length < 2) {
     games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
@@ -56,8 +59,9 @@ function initGames(ws, gameId) {
     if (games[gameId].players?.length === 3) {
       games[gameId].canPlay = true;
       games[gameId].action = 'startGo';
-      activePlayer = 0;
-      games[gameId].whoGo = games[gameId].players[0].id;
+      games[gameId].activePlayer = 0;
+      games[gameId].whoGo =
+        games[gameId].players[games[gameId].activePlayer].id;
     }
   } else if (games[gameId] && games[gameId].players?.length > 2) {
     if (
@@ -85,7 +89,15 @@ function broadcast(req) {
           payload: {
             gameId: gameId,
             success: true,
-            players: games[gameId].players.map((client) => client.nickname),
+            players: games[gameId].players.map((client) => {
+              return {
+                playerId: client.id,
+                playerName: client.nickname,
+                playerPosition: client.position,
+                playerMoney: client.money,
+                playerOwner: client.owner,
+              };
+            }),
             canPlay: games[gameId].canPlay,
             whoGo: games[gameId].whoGo,
             action: games[gameId].action,
@@ -95,13 +107,21 @@ function broadcast(req) {
       case 'going':
         if (req.payload.id === games[gameId].whoGo) {
           games[gameId].action = 'finishGo';
-          //TODO: добавить очки количество ходов игроку
+          if (client.id === games[gameId].whoGo) client.position += 1;
           res = {
             event: 'going',
             payload: {
               gameId: gameId,
               success: true,
-              players: games[gameId].players.map((client) => client.nickname),
+              players: games[gameId].players.map((client) => {
+                return {
+                  playerId: client.id,
+                  playerName: client.nickname,
+                  playerPosition: client.position,
+                  playerMoney: client.money,
+                  playerOwner: client.owner,
+                };
+              }),
               canPlay: games[gameId].canPlay,
               whoGo: games[gameId].whoGo,
               action: games[gameId].action,
@@ -113,16 +133,27 @@ function broadcast(req) {
       case 'end':
         if (req.payload.id === games[gameId].whoGo) {
           games[gameId].action = 'startGo';
-          activePlayer += 1;
-          activePlayer =
-            activePlayer === games[gameId].players.length ? 0 : activePlayer;
-          games[gameId].whoGo = games[gameId].players[activePlayer].id;
+          games[gameId].activePlayer += 1;
+          games[gameId].activePlayer =
+            games[gameId].activePlayer === games[gameId].players.length
+              ? 0
+              : games[gameId].activePlayer;
+          games[gameId].whoGo =
+            games[gameId].players[games[gameId].activePlayer].id;
           res = {
             event: 'going',
             payload: {
               gameId: gameId,
               success: true,
-              players: games[gameId].players.map((client) => client.nickname),
+              players: games[gameId].players.map((client) => {
+                return {
+                  playerId: client.id,
+                  playerName: client.nickname,
+                  playerPosition: client.position,
+                  playerMoney: client.money,
+                  playerOwner: client.owner,
+                };
+              }),
               canPlay: games[gameId].canPlay,
               whoGo: games[gameId].whoGo,
               action: games[gameId].action,
