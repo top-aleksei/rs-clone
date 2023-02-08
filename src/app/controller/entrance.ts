@@ -11,22 +11,23 @@ export async function createUser(user: User) {
       },
       body: JSON.stringify(user),
     });
-    return res;
+    return await res.json();
   } catch {
     throw new Error('Something went wrong');
   }
 }
 
-export async function Authorization(user: User) {
+export async function authorization(user: User) {
   try {
     const res = await fetch(`${HOST}/autorization`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(user),
     });
-  } catch {
+    return await res.json();
+  } catch (err) {
     throw new Error('Something went wrong');
   }
 }
