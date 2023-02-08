@@ -9,7 +9,7 @@ const games = {};
 const app = express();
 const port = 13500;
 
-app.use(morgan('dev'));
+app.use(morgan('tiny'));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
