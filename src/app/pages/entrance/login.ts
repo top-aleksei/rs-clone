@@ -1,6 +1,6 @@
 import Control from '../../../common/common';
 import { authorization } from '../../controller/entrance';
-import { setNameLS } from '../../localStorage/localStorage';
+import { clearInRoomLS, setNameLS } from '../../localStorage/localStorage';
 import { User } from '../../types/entrance';
 
 class LogIn {
@@ -56,6 +56,7 @@ class LogIn {
       const res = await authorization(data);
       if (res.status === 200) {
         setNameLS(name as string);
+        clearInRoomLS();
         this.backFunction();
       } else if (res.values === 'User not found') {
         this.label.node.textContent = `User '${name}' was not found`;

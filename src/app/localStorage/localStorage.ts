@@ -9,3 +9,15 @@ export function getNameLS() {
 export function clearNameLS() {
   localStorage.removeItem('monopolyName');
 }
+
+export function setInRoomLS() {
+  localStorage.setItem('isInRoom', 'true');
+}
+
+export function getInRoomLS() {
+  return localStorage.getItem('isInRoom');
+}
+
+export function clearInRoomLS() {
+  localStorage.removeItem('isInRoom');
+}

@@ -1,5 +1,6 @@
 import Control from '../../../common/common';
 import { clearNameLS, getNameLS } from '../../localStorage/localStorage';
+import Games from './games';
 
 class UserPage {
   container: Control;
@@ -16,7 +17,12 @@ class UserPage {
     const info = new Control(this.container.node, 'div', 'user-page__info');
     new Control(info.node, 'div', 'user-page__img');
     new Control(info.node, 'p', 'user-page__name', name);
+    this.renderGamesList();
     this.createLogOut();
+  }
+
+  renderGamesList() {
+    new Games(this.container.node);
   }
 
   createLogOut() {
