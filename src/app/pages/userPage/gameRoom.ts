@@ -78,7 +78,10 @@ class GameRoom {
   addWsListener() {
     ws.onmessage = (e) => {
       const res = e.data;
-      if (res.title === 'rerender room' && res.body.id === this.roomInfo.id) {
+      if (
+        res.title === 'rerender room' &&
+        res.body.id === this.roomInfo.gameId
+      ) {
         this.roomInfo = res.body;
         this.renderPlayers();
       }

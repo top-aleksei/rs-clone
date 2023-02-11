@@ -57,9 +57,11 @@ class Games {
 
   addWsListener() {
     ws.onmessage = (e) => {
-      const res = e.data;
-      if (res.title === 'existing rooms') {
-        this.loadExistGames(res.body);
+      console.log(e);
+      const res = JSON.parse(e.data);
+      if (res.event === 'rooms') {
+        console.log(e.data);
+        //this.loadExistGames(res.games);
       }
     };
   }
@@ -72,11 +74,11 @@ class Games {
       const name = getNameLS();
       if (name) {
         const roomInfo: Room = {
-          id: Date.now(),
+          gameId: Date.now(),
           qty: +totalPlayers,
           players: [name],
         };
-        ws.send(JSON.stringify({ title: 'new room', body: roomInfo }));
+        ws.send(JSON.stringify({ event: 'create', payload: roomInfo }));
         setInRoomLS();
         this.disableEnableCreation();
         const room = new GameRoom(
