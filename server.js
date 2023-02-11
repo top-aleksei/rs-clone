@@ -27,47 +27,53 @@ function start() {
   );
 
   wss.on('connection', (wsClient) => {
+    // Отправляю комнаты которые есть
+    const rooms = {
+      event: 'rooms',
+      games: games,
+    };
+    wsClient.send(JSON.stringify(rooms));
+
     wsClient.on('message', async (message) => {
       const req = JSON.parse(message.toString());
       console.log(req);
-      if (req.event == 'connect') {
-        wsClient.id = req.payload.id;
-        wsClient.nickname = req.payload.name;
+      if (req.event == 'create') {
+        //wsClient.id = req.payload.id;
+        wsClient.nickname = req.payload.players[0];
         wsClient.position = 1; //TODO: поставить посицию какую надо
         wsClient.money = 1000; //TODO: поставить денег сколько надо
         wsClient.owner = []; //TODO:это будет тут храниться чем владеет
-        initGames(wsClient, req.payload.gameId);
       }
-
+      initGames(wsClient, req.payload.qty, req.payload.gameId);
       broadcast(req);
     });
   });
 }
 
-function initGames(ws, gameId) {
+function initGames(ws, qty, gameId) {
   if (!games[gameId]) {
     games[gameId] = {};
     games[gameId].canPlay = false;
     games[gameId].players = [ws];
     games[gameId].activePlayer = null;
-  } else if (games[gameId] && games[gameId].players?.length < 2) {
+  } else if (games[gameId] && games[gameId].players?.length < qty) {
     games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );
     games[gameId].players = [...games[gameId].players, ws];
-  } else if (games[gameId] && games[gameId].players?.length === 2) {
+  } else if (games[gameId] && games[gameId].players?.length === qty) {
     games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );
     games[gameId].players = [...games[gameId].players, ws];
-    if (games[gameId].players?.length === 3) {
+    if (games[gameId].players?.length === qty) {
       games[gameId].canPlay = true;
       games[gameId].action = 'startGo';
       games[gameId].activePlayer = 0;
       games[gameId].whoGo =
         games[gameId].players[games[gameId].activePlayer].id;
     }
-  } else if (games[gameId] && games[gameId].players?.length > 2) {
+  } else if (games[gameId] && games[gameId].players?.length > qty) {
     if (
       games[gameId].players.filter((player) => player.nickname !== ws.nickname)
         .length > 0
@@ -87,7 +93,10 @@ function broadcast(req) {
   const { id, name, gameId } = req.payload;
   games[gameId].players.forEach((client) => {
     switch (req.event) {
-      case 'connect':
+      case 'connect': {
+        res = JSON.stringify(games);
+      }
+      case 'join':
         res = {
           event: 'connectToPlay',
           payload: {
