@@ -1,4 +1,5 @@
 import Control from '../../../common/common';
+import { ws } from '../../controller/socket';
 import {
   clearInRoomLS,
   getInRoomLS,
@@ -26,6 +27,7 @@ class GameRoom {
       'regular game',
     );
     this.players = new Control(this.container.node, 'p', 'room__players');
+    this.addWsListener();
   }
 
   renderPlayers() {
@@ -45,10 +47,15 @@ class GameRoom {
         if (!getInRoomLS()) {
           empty.node.classList.add('active');
           new Control(block.node, 'div', 'room__text', 'join');
-          empty.node.onclick = () => console.log('you added');
+          empty.node.onclick = () => this.joinRoom;
         }
       }
     }
+  }
+
+  joinRoom() {
+    this.roomInfo.players.push(this.name);
+    ws.send(JSON.stringify({ title: 'rerender room', body: this.roomInfo }));
   }
 
   leaveRoom() {
@@ -59,12 +66,23 @@ class GameRoom {
     if (ind !== -1) {
       players.splice(ind, 1);
     }
+    ws.send(JSON.stringify({ title: 'rerender room', body: this.roomInfo }));
     if (players.length === 0) {
       this.container.destroy();
     } else {
       this.renderPlayers();
     }
     this.enableCreation();
+  }
+
+  addWsListener() {
+    ws.onmessage = (e) => {
+      const res = e.data;
+      if (res.title === 'rerender room' && res.body.id === this.roomInfo.id) {
+        this.roomInfo = res.body;
+        this.renderPlayers();
+      }
+    };
   }
 }
 

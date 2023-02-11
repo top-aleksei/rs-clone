@@ -1,4 +1,5 @@
 import Control from '../../../common/common';
+import { ws } from '../../controller/socket';
 import {
   getInRoomLS,
   getNameLS,
@@ -18,6 +19,7 @@ class Games {
     this.form = new Control(this.container.node, 'form', 'games__form');
     this.renderForm();
     this.list = new Control(this.container.node, 'div', 'games__list');
+    this.addWsListener();
   }
 
   renderTitle() {
@@ -53,6 +55,15 @@ class Games {
     this.createGameListener();
   }
 
+  addWsListener() {
+    ws.onmessage = (e) => {
+      const res = e.data;
+      if (res.title === 'existing rooms') {
+        this.loadExistGames(res.body);
+      }
+    };
+  }
+
   createGameListener() {
     this.form.node.onsubmit = (e) => {
       e.preventDefault();
@@ -65,6 +76,7 @@ class Games {
           qty: +totalPlayers,
           players: [name],
         };
+        ws.send(JSON.stringify({ title: 'new room', body: roomInfo }));
         setInRoomLS();
         this.disableEnableCreation();
         const room = new GameRoom(
@@ -75,6 +87,19 @@ class Games {
         room.renderPlayers();
       }
     };
+  }
+
+  loadExistGames(rooms: Room[]) {
+    if (rooms.length > 0) {
+      rooms.forEach((el) => {
+        const room = new GameRoom(
+          this.list.node,
+          el,
+          this.disableEnableCreation.bind(this),
+        );
+        room.renderPlayers();
+      });
+    }
   }
 }
 
