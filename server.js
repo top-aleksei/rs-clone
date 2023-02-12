@@ -43,6 +43,7 @@ function start() {
       event: 'rooms',
       games: gamesNow,
     };
+    console.log(`send to new client :`, JSON.stringify(rooms));
     wsClient.send(JSON.stringify(rooms));
 
     wsClient.on('message', async (message) => {
@@ -186,7 +187,7 @@ function multicast(req) {
         };
         break;
     }
-    console.log('sending:', JSON.stringify(res));
+    console.log(`sending to ${client.nickname}:`, JSON.stringify(res));
     client.send(JSON.stringify(res));
   });
   if (games[req.payload.gameId].players.length === 0) {
