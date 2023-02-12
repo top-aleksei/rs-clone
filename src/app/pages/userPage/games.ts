@@ -15,11 +15,11 @@ class Games {
 
   constructor(parent: HTMLElement) {
     this.container = new Control(parent, 'div', 'games');
+    this.addWsListener();
     this.renderTitle();
     this.form = new Control(this.container.node, 'form', 'games__form');
     this.renderForm();
     this.list = new Control(this.container.node, 'div', 'games__list');
-    this.addWsListener();
   }
 
   renderTitle() {
@@ -57,11 +57,20 @@ class Games {
 
   addWsListener() {
     ws.onmessage = (e) => {
-      console.log(e);
+      // console.log(e);
       const res = JSON.parse(e.data);
       if (res.event === 'rooms') {
-        console.log(e.data);
-        //this.loadExistGames(res.games);
+        // console.log(e.data);
+        this.loadExistGames(res.games);
+      }
+      if (res.event === 'newroom') {
+        console.log(res.room);
+        const room = new GameRoom(
+          this.list.node,
+          res.room,
+          this.disableEnableCreation.bind(this),
+        );
+        room.renderPlayers();
       }
     };
   }
@@ -76,17 +85,17 @@ class Games {
         const roomInfo: Room = {
           gameId: Date.now(),
           qty: +totalPlayers,
-          players: [name],
+          nicknames: [name],
         };
         ws.send(JSON.stringify({ event: 'create', payload: roomInfo }));
         setInRoomLS();
         this.disableEnableCreation();
-        const room = new GameRoom(
-          this.list.node,
-          roomInfo,
-          this.disableEnableCreation.bind(this),
-        );
-        room.renderPlayers();
+        // const room = new GameRoom(
+        //   this.list.node,
+        //   roomInfo,
+        //   this.disableEnableCreation.bind(this),
+        // );
+        // room.renderPlayers();
       }
     };
   }

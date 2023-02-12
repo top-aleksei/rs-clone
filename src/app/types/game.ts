@@ -7,5 +7,5 @@ export interface Player {
 export interface Room {
   gameId: number;
   qty: number;
-  players: string[];
+  nicknames: string[];
 }

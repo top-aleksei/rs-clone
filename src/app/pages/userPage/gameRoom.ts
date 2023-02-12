@@ -34,7 +34,7 @@ class GameRoom {
     this.players.node.textContent = '';
     for (let i = 0; i < this.roomInfo.qty; i += 1) {
       const block = new Control(this.players.node, 'div', 'room__player');
-      const name = this.roomInfo.players[i];
+      const name = this.roomInfo.nicknames[i];
       if (name) {
         new Control(block.node, 'div', 'room__img');
         new Control(block.node, 'div', 'room__text', name);
@@ -47,43 +47,58 @@ class GameRoom {
         if (!getInRoomLS()) {
           empty.node.classList.add('active');
           new Control(block.node, 'div', 'room__text', 'join');
-          empty.node.onclick = () => this.joinRoom;
+          empty.node.onclick = () => this.joinRoom();
         }
       }
     }
   }
 
   joinRoom() {
-    this.roomInfo.players.push(this.name);
-    ws.send(JSON.stringify({ title: 'rerender room', body: this.roomInfo }));
+    // console.log('joined');
+    this.roomInfo.nicknames.push(this.name);
+    ws.send(
+      JSON.stringify({
+        event: 'join',
+        payload: { gameId: this.roomInfo.gameId, nickname: this.name },
+      }),
+    );
   }
 
   leaveRoom() {
     clearInRoomLS();
-    const { players } = this.roomInfo;
+    const { nicknames } = this.roomInfo;
 
-    const ind = players.indexOf(this.name);
+    const ind = nicknames.indexOf(this.name);
     if (ind !== -1) {
-      players.splice(ind, 1);
+      nicknames.splice(ind, 1);
     }
-    ws.send(JSON.stringify({ title: 'rerender room', body: this.roomInfo }));
-    if (players.length === 0) {
-      this.container.destroy();
-    } else {
-      this.renderPlayers();
-    }
+    // console.log('id', this.roomInfo.gameId);
+    ws.send(
+      JSON.stringify({
+        event: 'leave',
+        payload: { gameId: this.roomInfo.gameId, nickname: this.name },
+      }),
+    );
+
     this.enableCreation();
   }
 
   addWsListener() {
     ws.onmessage = (e) => {
-      const res = e.data;
+      const res = JSON.parse(e.data);
+      console.log(res);
       if (
-        res.title === 'rerender room' &&
-        res.body.id === this.roomInfo.gameId
+        res.event === 'changeroom' &&
+        res.room.gameId === this.roomInfo.gameId
       ) {
-        this.roomInfo = res.body;
-        this.renderPlayers();
+        // console.log(this);
+        this.roomInfo = res.room;
+        console.log('res');
+        if (res.room.nicknames.length === 0) {
+          this.container.destroy();
+        } else {
+          this.renderPlayers();
+        }
       }
     };
   }
