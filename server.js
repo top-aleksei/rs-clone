@@ -78,6 +78,7 @@ function initGames(ws, req) {
       //games[gameId].activePlayer = null;
       games[req.payload.gameId].qty = req.payload.qty;
       ws.nickname = req.payload.nicknames[0];
+      //console.log(ws.nickname);
       /*ws.position = 1; //TODO: поставить позицию какую надо
     ws.money = 1000; //TODO: поставить денег сколько надо
     ws.owner = []; //TODO:это будет тут храниться чем владеет
@@ -96,6 +97,7 @@ function initGames(ws, req) {
       (player) => player.nickname
     );
   } else if (req.event === 'leave') {
+    ws.nickname = req.payload.nickname;
     games[req.payload.gameId].players = games[
       req.payload.gameId
     ].players.filter((player) => player.nickname !== ws.nickname);
