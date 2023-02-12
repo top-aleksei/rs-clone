@@ -17,7 +17,6 @@ app.use(bodyParser.json());
 
 const routes = require('./settings/routes');
 routes(app);
-
 app.listen(port, () => {
   console.log(`App listen on port ${port}`);
 });
@@ -30,9 +29,19 @@ function start() {
   wss.on('connection', (wsClient) => {
     // Отправляю комнаты которые есть
     players.add(wsClient);
+    const gamesNow = [];
+    for (var key in games) {
+      let game = {
+        id: key,
+        qty: games[key].qty,
+        nicknames: games[key].nicknames,
+      };
+      gamesNow.push(game);
+    }
+
     const rooms = {
       event: 'rooms',
-      games: games,
+      games: gamesNow,
     };
     wsClient.send(JSON.stringify(rooms));
 
