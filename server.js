@@ -77,13 +77,14 @@ function initGames(ws, req) {
       games[req.payload.gameId].nicknames = req.payload.nicknames;
       //games[gameId].activePlayer = null;
       games[req.payload.gameId].qty = req.payload.qty;
-      ws.nickname = req.payload.nicknames;
+      ws.nickname = req.payload.nicknames[0];
       /*ws.position = 1; //TODO: поставить позицию какую надо
     ws.money = 1000; //TODO: поставить денег сколько надо
     ws.owner = []; //TODO:это будет тут храниться чем владеет
     */
     }
   } else if (req.event === 'join') {
+    ws.nickname = req.payload.nickname;
     /*games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );*/
@@ -145,7 +146,8 @@ function multicast(req) {
           };
         }
         break;
-      case ('join', 'leave'):
+      case 'join':
+      case 'leave':
         {
           res = {
             event: 'changeroom',
