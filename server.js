@@ -155,9 +155,6 @@ function multicast(req) {
               nicknames: games[req.payload.gameId].nicknames,
             },
           };
-          if (games[req.payload.gameId].players.length === 0) {
-            delete games[req.payload.gameId];
-          }
         }
         break;
       default:
@@ -169,6 +166,9 @@ function multicast(req) {
     console.log('sending:', JSON.stringify(res));
     client.send(JSON.stringify(res));
   });
+  if (games[req.payload.gameId].players.length === 0) {
+    delete games[req.payload.gameId];
+  }
 }
 
 function broadcast(req) {
