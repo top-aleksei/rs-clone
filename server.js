@@ -58,28 +58,40 @@ function start() {
         multicast(req);
       } else broadcast(req);
     });
+
+    wsClient.on('close', async () => {
+      players.delete(wsClient);
+      for (var key in games) {
+        // TODO: удалить со всех комнат
+      }
+    });
   });
 }
 
 function initGames(ws, req) {
-  if (!games[req.payload.gameId]) {
-    games[req.payload.gameId] = {};
-    //games[req.gameId].canPlay = false;
-    games[req.payload.gameId].players = [ws];
-    games[req.payload.gameId].nicknames = req.payload.nicknames;
-    //games[gameId].activePlayer = null;
-    games[req.payload.gameId].qty = req.payload.qty;
-    ws.nickname = req.payload.nicknames;
-    /*ws.position = 1; //TODO: поставить позицию какую надо
+  if (req.event === 'create') {
+    if (!games[req.payload.gameId]) {
+      games[req.payload.gameId] = {};
+      //games[req.gameId].canPlay = false;
+      games[req.payload.gameId].players = [ws];
+      games[req.payload.gameId].nicknames = req.payload.nicknames;
+      //games[gameId].activePlayer = null;
+      games[req.payload.gameId].qty = req.payload.qty;
+      ws.nickname = req.payload.nicknames;
+      /*ws.position = 1; //TODO: поставить позицию какую надо
     ws.money = 1000; //TODO: поставить денег сколько надо
     ws.owner = []; //TODO:это будет тут храниться чем владеет
     */
+    }
   } else if (req.event === 'join') {
     /*games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );*/
-    games[req.payload.gameId].players = [...games[gameId].players, ws];
-    games[req.payload.gameId].nicknames = games[gameId].players.map(
+    games[req.payload.gameId].players = [
+      ...games[req.payload.gameId].players,
+      ws,
+    ];
+    games[req.payload.gameId].nicknames = games[req.payload.gameId].players.map(
       (player) => player.nickname
     );
   } else if (req.event === 'leave') {
