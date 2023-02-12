@@ -60,10 +60,26 @@ function start() {
     });
 
     wsClient.on('close', async () => {
-      players.delete(wsClient);
-      for (var key in games) {
-        // TODO: удалить со всех комнат
+      if (wsClient.gameId) {
+        games[wsClient.gameId].players = games[wsClient.gameId].players.filter(
+          (player) => player !== wsClient
+        );
+        games[wsClient.gameId].nicknames = games[
+          wsClient.gameId
+        ].nicknames.filter((nickname) => nickname !== wsClient.nickname);
+
+        const req = {
+          event: 'leave',
+          payload: {
+            gameId: wsClient.gameId,
+            qty: games[wsClient.gameId].qty,
+            nicknames: games[wsClient.gameId].nicknames,
+          },
+        };
+
+        multicast(req);
       }
+      players.delete(wsClient);
     });
   });
 }
@@ -78,6 +94,7 @@ function initGames(ws, req) {
       //games[gameId].activePlayer = null;
       games[req.payload.gameId].qty = req.payload.qty;
       ws.nickname = req.payload.nicknames[0];
+      ws.gameId = req.payload.gameId;
       //console.log(ws.nickname);
       /*ws.position = 1; //TODO: поставить позицию какую надо
     ws.money = 1000; //TODO: поставить денег сколько надо
@@ -86,6 +103,7 @@ function initGames(ws, req) {
     }
   } else if (req.event === 'join') {
     ws.nickname = req.payload.nickname;
+    ws.gameId = req.payload.gameId;
     /*games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );*/
@@ -98,6 +116,7 @@ function initGames(ws, req) {
     );
   } else if (req.event === 'leave') {
     ws.nickname = req.payload.nickname;
+    ws.gameId = null;
     games[req.payload.gameId].players = games[
       req.payload.gameId
     ].players.filter((player) => player.nickname !== ws.nickname);
