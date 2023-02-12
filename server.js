@@ -138,7 +138,7 @@ function multicast(req) {
           res = {
             event: 'newroom',
             room: {
-              id: req.payload.gameId,
+              gameId: req.payload.gameId,
               qty: games[req.payload.gameId].qty,
               nicknames: games[req.payload.gameId].nicknames,
             },
@@ -150,7 +150,7 @@ function multicast(req) {
           res = {
             event: 'changeroom',
             room: {
-              id: req.payload.gameId,
+              gameId: req.payload.gameId,
               qty: games[req.payload.gameId].qty,
               nicknames: games[req.payload.gameId].nicknames,
             },
@@ -159,7 +159,7 @@ function multicast(req) {
             res = {
               event: 'deleteroom',
               room: {
-                id: req.payload.gameId,
+                gameId: req.payload.gameId,
                 qty: games[req.payload.gameId].qty,
                 nicknames: games[req.payload.gameId].nicknames,
               },
