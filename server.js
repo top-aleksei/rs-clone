@@ -98,7 +98,7 @@ function initGames(ws, req) {
     games[req.payload.gameId].players = games[
       req.payload.gameId
     ].players.filter((player) => player.nickname !== ws.nickname);
-    games[req.payload.gameId].nicknames = games[gameId].players.map(
+    games[req.payload.gameId].nicknames = games[req.payload.gameId].players.map(
       (player) => player.nickname
     );
   }
@@ -156,14 +156,6 @@ function multicast(req) {
             },
           };
           if (games[req.payload.gameId].players.length === 0) {
-            res = {
-              event: 'deleteroom',
-              room: {
-                gameId: req.payload.gameId,
-                qty: games[req.payload.gameId].qty,
-                nicknames: games[req.payload.gameId].nicknames,
-              },
-            };
             delete games[req.payload.gameId];
           }
         }
