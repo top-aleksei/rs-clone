@@ -66,10 +66,10 @@ function initGames(ws, req) {
     games[req.payload.gameId] = {};
     //games[req.gameId].canPlay = false;
     games[req.payload.gameId].players = [ws];
-    games[req.payload.gameId].nicknames = req.payload.players;
+    games[req.payload.gameId].nicknames = req.payload.nicknames;
     //games[gameId].activePlayer = null;
     games[req.payload.gameId].qty = req.payload.qty;
-    ws.nickname = req.payload.players;
+    ws.nickname = req.payload.nicknames;
     /*ws.position = 1; //TODO: поставить позицию какую надо
     ws.money = 1000; //TODO: поставить денег сколько надо
     ws.owner = []; //TODO:это будет тут храниться чем владеет
