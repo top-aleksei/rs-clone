@@ -4,6 +4,7 @@ import {
   clearInRoomLS,
   getInRoomLS,
   getNameLS,
+  setInRoomLS,
 } from '../../localStorage/localStorage';
 import { Room } from '../../types/game';
 
@@ -47,14 +48,16 @@ class GameRoom {
         if (!getInRoomLS()) {
           empty.node.classList.add('active');
           new Control(block.node, 'div', 'room__text', 'join');
-          empty.node.onclick = () => this.joinRoom();
+          empty.node.onclick = () => {
+            this.joinRoom();
+            // setInRoomLS();
+          };
         }
       }
     }
   }
 
   joinRoom() {
-    // console.log('joined');
     this.roomInfo.nicknames.push(this.name);
     ws.send(
       JSON.stringify({
@@ -62,6 +65,7 @@ class GameRoom {
         payload: { gameId: this.roomInfo.gameId, nickname: this.name },
       }),
     );
+    setInRoomLS();
   }
 
   leaveRoom() {
@@ -72,7 +76,6 @@ class GameRoom {
     if (ind !== -1) {
       nicknames.splice(ind, 1);
     }
-    // console.log('id', this.roomInfo.gameId);
     ws.send(
       JSON.stringify({
         event: 'leave',
@@ -84,23 +87,22 @@ class GameRoom {
   }
 
   addWsListener() {
-    ws.onmessage = (e) => {
+    ws.addEventListener('message', (e) => {
       const res = JSON.parse(e.data);
-      console.log(res);
       if (
         res.event === 'changeroom' &&
         res.room.gameId === this.roomInfo.gameId
       ) {
-        // console.log(this);
         this.roomInfo = res.room;
         console.log('res');
         if (res.room.nicknames.length === 0) {
           this.container.destroy();
         } else {
           this.renderPlayers();
+          // this.enableCreation();
         }
       }
-    };
+    });
   }
 }
 

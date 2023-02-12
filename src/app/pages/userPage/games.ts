@@ -15,9 +15,9 @@ class Games {
 
   constructor(parent: HTMLElement) {
     this.container = new Control(parent, 'div', 'games');
-    this.addWsListener();
     this.renderTitle();
     this.form = new Control(this.container.node, 'form', 'games__form');
+    this.addWsListener();
     this.renderForm();
     this.list = new Control(this.container.node, 'div', 'games__list');
   }
@@ -56,8 +56,8 @@ class Games {
   }
 
   addWsListener() {
-    ws.onmessage = (e) => {
-      // console.log(e);
+    ws.addEventListener('message', (e) => {
+      console.log(ws);
       const res = JSON.parse(e.data);
       if (res.event === 'rooms') {
         // console.log(e.data);
@@ -72,7 +72,7 @@ class Games {
         );
         room.renderPlayers();
       }
-    };
+    });
   }
 
   createGameListener() {
