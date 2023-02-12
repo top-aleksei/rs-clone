@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const games = {};
+const players = new Set();
 
 const app = express();
 const port = 13500;
@@ -28,6 +29,7 @@ function start() {
 
   wss.on('connection', (wsClient) => {
     // Отправляю комнаты которые есть
+    players.add(wsClient);
     const rooms = {
       event: 'rooms',
       games: games,
@@ -37,31 +39,49 @@ function start() {
     wsClient.on('message', async (message) => {
       const req = JSON.parse(message.toString());
       console.log(req);
-      if (req.event == 'create') {
-        //wsClient.id = req.payload.id;
-        wsClient.nickname = req.payload.players[0];
-        wsClient.position = 1; //TODO: поставить посицию какую надо
-        wsClient.money = 1000; //TODO: поставить денег сколько надо
-        wsClient.owner = []; //TODO:это будет тут храниться чем владеет
-      }
-      initGames(wsClient, req.payload.qty, req.payload.gameId);
-      broadcast(req);
+
+      if (
+        req.event === 'create' ||
+        req.event === 'join' ||
+        req.event === 'leave'
+      ) {
+        initGames(wsClient, req);
+        multicast(req);
+      } else broadcast(req);
     });
   });
 }
 
-function initGames(ws, qty, gameId) {
-  if (!games[gameId]) {
-    games[gameId] = {};
-    games[gameId].canPlay = false;
-    games[gameId].players = [ws];
-    games[gameId].activePlayer = null;
-  } else if (games[gameId] && games[gameId].players?.length < qty) {
-    games[gameId].players = games[gameId].players.filter(
+function initGames(ws, req) {
+  if (!games[req.payload.gameId]) {
+    games[req.payload.gameId] = {};
+    //games[req.gameId].canPlay = false;
+    games[req.payload.gameId].players = [ws];
+    games[req.payload.gameId].nicknames = req.payload.players;
+    //games[gameId].activePlayer = null;
+    games[req.payload.gameId].qty = req.payload.qty;
+    ws.nickname = req.payload.players;
+    /*ws.position = 1; //TODO: поставить позицию какую надо
+    ws.money = 1000; //TODO: поставить денег сколько надо
+    ws.owner = []; //TODO:это будет тут храниться чем владеет
+    */
+  } else if (req.event === 'join') {
+    /*games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
+    );*/
+    games[req.payload.gameId].players = [...games[gameId].players, ws];
+    games[req.payload.gameId].nicknames = games[gameId].players.map(
+      (player) => player.nickname
     );
-    games[gameId].players = [...games[gameId].players, ws];
-  } else if (games[gameId] && games[gameId].players?.length === qty) {
+  } else if (req.event === 'leave') {
+    games[req.payload.gameId].players = games[
+      req.payload.gameId
+    ].players.filter((player) => player.nickname !== ws.nickname);
+    games[req.payload.gameId].nicknames = games[gameId].players.map(
+      (player) => player.nickname
+    );
+  }
+} /*else if (games[gameId] && games[gameId].players?.length === qty) {
     games[gameId].players = games[gameId].players.filter(
       (player) => player.nickname !== ws.nickname
     );
@@ -86,6 +106,56 @@ function initGames(ws, qty, gameId) {
       games[gameId].action = 'startGo';
     } else ws.send('Room is full');
   }
+}*/
+
+function multicast(req) {
+  let res;
+  Array.from(players).forEach((client) => {
+    switch (req.event) {
+      case 'create':
+        {
+          res = {
+            event: 'newroom',
+            room: {
+              id: req.payload.gameId,
+              qty: games[req.payload.gameId].qty,
+              nicknames: games[req.payload.gameId].nicknames,
+            },
+          };
+        }
+        break;
+      case ('join', 'leave'):
+        {
+          res = {
+            event: 'changeroom',
+            room: {
+              id: req.payload.gameId,
+              qty: games[req.payload.gameId].qty,
+              nicknames: games[req.payload.gameId].nicknames,
+            },
+          };
+          if (games[req.payload.gameId].players.length === 0) {
+            res = {
+              event: 'deleteroom',
+              room: {
+                id: req.payload.gameId,
+                qty: games[req.payload.gameId].qty,
+                nicknames: games[req.payload.gameId].nicknames,
+              },
+            };
+            delete games[req.payload.gameId];
+          }
+        }
+        break;
+      default:
+        res = {
+          event: 'unknown',
+        };
+        break;
+    }
+    console.log('sending:', JSON.stringify(res));
+    client.send(JSON.stringify(res));
+  });
 }
 
 function broadcast(req) {
@@ -93,9 +163,6 @@ function broadcast(req) {
   const { id, name, gameId } = req.payload;
   games[gameId].players.forEach((client) => {
     switch (req.event) {
-      case 'connect': {
-        res = JSON.stringify(games);
-      }
       case 'join':
         res = {
           event: 'connectToPlay',
@@ -117,7 +184,7 @@ function broadcast(req) {
           },
         };
         break;
-      case 'going':
+      /*  case 'going':
         if (req.payload.id === games[gameId].whoGo) {
           games[gameId].action = 'finishGo';
           if (client.id === games[gameId].whoGo) client.position += 1;
@@ -173,13 +240,14 @@ function broadcast(req) {
             },
           };
         }
-        break;
+        break;*/
       default:
         res = {
           event: 'unknown',
         };
         break;
     }
+    console.log('sending:', res);
     client.send(JSON.stringify(res));
   });
 }
