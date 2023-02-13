@@ -1,0 +1,47 @@
+.table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #262c2f;
+  min-height: 100vh;
+  gap: 40px;
+
+  .board {
+    width: 695px;
+    height: 695px;
+    position: relative;
+    background-color: white;
+
+    &__center{
+      width: 493px;
+      height: 493px;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      margin: 1px;
+      padding: 8px;  
+      background-color: #262c2f;
+    }
+  }
+}
+
+.players-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 200px;
+  height: auto;
+  padding: 10px;
+  background-color: #161a1b;
+  margin: 30px;
+
+  &__nick {
+    color: aliceblue;
+    font-size: 18px;
+  }
+
+  &__money {    
+    color: rgb(177, 190, 201);    
+    font-size: 22px;
+  }
+}

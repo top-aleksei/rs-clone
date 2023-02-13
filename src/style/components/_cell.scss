@@ -1,0 +1,502 @@
+.card {
+  position: absolute;
+  padding: 1px;  
+  border: 1px solid #161a1b;  
+  background-color: transparent;
+
+  &__img{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+  }
+
+  &__cost {
+    position: absolute;
+    background-color: red;
+  }
+}
+
+
+.card:nth-child(2) {
+  top: 0;
+  left: 100px;
+}
+.card:nth-child(2) .card__img {
+  background-image: url('./assets/img/board/galanteya.png');
+  background-size: 150%;
+}
+.card:nth-child(2) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(220, 130, 145);
+}
+
+.card:nth-child(3) {
+  top: 0;
+  left: 155px;
+}
+.card:nth-child(3) .card__img {
+  background-image: url('./assets/img/board/question.png');
+}
+.card:nth-child(3) .card__cost {
+  display: none;
+}
+
+.card:nth-child(4) {
+  top: 0;
+  left: 210px;
+}
+.card:nth-child(4) .card__img {
+  background-image: url('./assets/img/board/makey.png');
+  background-size: 50%;
+}
+.card:nth-child(4) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(220, 130, 145);
+}
+
+.card:nth-child(5) {
+  top: 0;
+  left: 265px;
+}
+.card:nth-child(5) .card__img {
+  background-image: url('./assets/img/board/money.png');
+}
+.card:nth-child(5) .card__cost {
+  display: none;
+}
+.card:nth-child(6) {
+  top: 0;
+  left: 320px;
+}
+.card:nth-child(6) .card__img {
+  background-image: url('./assets/img/board/belshina.png');
+  background-size: 18%;
+}
+.card:nth-child(6) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(175, 29, 53);
+}
+.card:nth-child(7) {
+  top: 0;
+  left: 375px;
+}
+.card:nth-child(7) .card__img {
+  background-image: url('./assets/img/board/milavitsa.png');
+  background-size: 70%;
+}
+.card:nth-child(7) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(175, 114, 29);
+}
+.card:nth-child(8) {
+  top: 0;
+  left: 430px;
+}
+.card:nth-child(8) .card__img {
+  background-image: url('./assets/img/board/question.png');
+}
+.card:nth-child(8) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(175, 114, 29);
+}
+.card:nth-child(9) {
+  top: 0;
+  left: 485px;
+}
+.card:nth-child(9) .card__img {
+  background-image: url('./assets/img/board/mf.png');
+  background-size: 45%;
+}
+.card:nth-child(9) .card__cost {
+  display: none;
+}
+
+.card:nth-child(10) {
+  top: 0;
+  left: 540px;
+}
+.card:nth-child(10) .card__img {
+  background-image: url('./assets/img/board/svitanak.png');
+  background-size: 25%;
+}
+.card:nth-child(10) .card__cost {
+  top: -25px;
+  left: 0;
+  background-color: rgb(175, 114, 29);
+}
+.card:nth-child(12) {
+  top: 100px;
+  right: 0;
+}
+.card:nth-child(12) .card__img {
+  background-image: url('./assets/img/board/kommunarka.png');
+  background-size: 65%;
+}
+.card:nth-child(12) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(29, 158, 175);
+}
+.card:nth-child(13) {
+  top: 155px;
+  right: 0;
+}
+.card:nth-child(13) .card__img {
+  background-image: url('./assets/img/board/horizont.png');
+  background-size: 75%;
+}
+.card:nth-child(13) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(101, 23, 23);
+}
+.card:nth-child(14) {
+  top: 210px;
+  right: 0;
+}
+.card:nth-child(14) .card__img {
+  background-image: url('./assets/img/board/spartak.png');
+  background-size: 75%;
+}
+.card:nth-child(14) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(29, 158, 175);
+}
+.card:nth-child(15) {
+  top: 265px;
+  right: 0;
+}
+.card:nth-child(15) .card__img {
+  background-image: url('./assets/img/board/krasny.png');
+  background-size: 75%;
+}
+.card:nth-child(15) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(29, 158, 175);
+}
+.card:nth-child(16) {
+  top: 320px;
+  right: 0;
+}
+.card:nth-child(16) .card__img {
+  background-image: url('./assets/img/board/maz.png');
+  background-size: 75%;
+}
+.card:nth-child(16) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(175, 29, 53);
+}
+.card:nth-child(17) {
+  top: 375px;
+  right: 0;
+}
+.card:nth-child(17) .card__img {
+  background-image: url('./assets/img/board/lidskae.png');
+  background-size: 120%;
+}
+.card:nth-child(17) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(26, 91, 147);
+}
+.card:nth-child(18) {
+  top: 430px;
+  right: 0;
+}
+
+.card:nth-child(18) .card__img::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 30px;
+  left: 0;
+  background: url('./assets/img/board/question.png') 0 0 no-repeat;
+  background-size: 40%;
+  transform: rotate(90deg);
+}
+.card:nth-child(18) .card__cost {
+  display: none
+}
+
+.card:nth-child(19) {
+  top: 485px;
+  right: 0;
+}
+.card:nth-child(19) .card__img {
+  background-image: url('./assets/img/board/alivaria.png');
+  background-size: 80%;
+}
+.card:nth-child(19) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(26, 91, 147);
+}
+.card:nth-child(20) {
+  top: 540px;
+  right: 0;
+}
+.card:nth-child(20) .card__img {
+  background-image: url('./assets/img/board/kristall.png');
+  background-size: 90%;
+}
+.card:nth-child(20) .card__cost {
+  top: 0;
+  right: -25px;
+  background-color: rgb(26, 91, 147);
+}
+.card:nth-child(22) {
+  bottom: 0;
+  left: 540px;
+}
+.card:nth-child(22) .card__img {
+  background-image: url('./assets/img/board/belita.png');
+  background-size: 100%;
+}
+.card:nth-child(22) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(63, 185, 65);
+}
+.card:nth-child(23) {
+  bottom: 0;
+  left: 485px;
+}
+.card:nth-child(23) .card__img {
+  background-image: url('./assets/img/board/question.png');
+}
+.card:nth-child(23) .card__cost {
+  display: none;
+}
+
+.card:nth-child(24) {
+  bottom: 0;
+  left: 430px;
+}
+.card:nth-child(24) .card__img {
+  background-image: url('./assets/img/board/relouis.png');
+  background-size: 130%;
+}
+.card:nth-child(24) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(63, 185, 65);
+}
+.card:nth-child(25) {
+  bottom: 0;
+  left: 375px;
+}
+.card:nth-child(25) .card__img {
+  background-image: url('./assets/img/board/luxvisage.png');
+  background-size: 85%;
+}
+.card:nth-child(25) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(63, 185, 65);
+}
+.card:nth-child(26) {
+  bottom: 0;
+  left: 320px;
+}
+.card:nth-child(26) .card__img {
+  background-image: url('./assets/img/board/belaz.png');
+  background-size: 22%;
+}
+.card:nth-child(26) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(175, 29, 53);
+}
+.card:nth-child(27) {
+  bottom: 0;
+  left: 265px;
+}
+.card:nth-child(27) .card__img {
+  background-image: url('./assets/img/board/aist.png');
+  background-size: 22%;
+}
+.card:nth-child(27) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(85, 227, 168);
+}
+.card:nth-child(28) {
+  bottom: 0;
+  left: 210px;
+}
+.card:nth-child(28) .card__img {
+  background-image: url('./assets/img/board/krakken.png');
+  background-size: 60%;
+}
+.card:nth-child(28) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(85, 227, 168);
+}
+.card:nth-child(29) {
+  bottom: 0;
+  left: 155px;
+}
+.card:nth-child(29) .card__img {
+  background-image: url('./assets/img/board/atlant.png');
+  background-size: 50%;
+}
+.card:nth-child(29) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(101, 23, 23);
+}
+.card:nth-child(30) {
+  bottom: 0;
+  left: 100px;
+}
+.card:nth-child(30) .card__img {
+  background-image: url('./assets/img/board/minsk.png');
+  background-size: 30%;
+}
+.card:nth-child(30) .card__cost {
+  bottom: -25px;
+  left: 0;
+  background-color: rgb(85, 227, 168);
+}
+
+.card:nth-child(32) {
+  left: 0;
+  top: 540px;
+}
+.card:nth-child(32) .card__img {
+  background-image: url('./assets/img/board/shagovita.png');
+  background-size: 75%;
+}
+.card:nth-child(32) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(196, 79, 204);
+}
+.card:nth-child(33) {
+  left: 0;
+  top: 485px;
+}
+.card:nth-child(33) .card__img {
+  background-image: url('./assets/img/board/belwest.png');
+  background-size: 80%;
+}
+.card:nth-child(33) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(196, 79, 204);
+}
+.card:nth-child(34) {
+  left: 0;
+  top: 430px;
+}
+.card:nth-child(34) .card__img::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: -30px;
+  left: 0;
+  background: url('./assets/img/board/question.png') 0 0 no-repeat;
+  background-size: 40%;
+  transform: rotate(-90deg);
+}
+
+.card:nth-child(34) .card__cost {
+  display: none;
+}
+
+.card:nth-child(35) {
+  left: 0;
+  top: 375px;
+}
+.card:nth-child(35) .card__img {
+  background-image: url('./assets/img/board/marko.png');
+  background-size: 98%;
+}
+.card:nth-child(35) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(196, 79, 204);
+}
+.card:nth-child(36) {
+  left: 0;
+  top: 320px;
+}
+.card:nth-child(36) .card__img {
+  background-image: url('./assets/img/board/tractor.png');
+  background-size: 95%;
+}
+.card:nth-child(36) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(101, 23, 23);
+}
+
+.card:nth-child(37) {
+  left: 0;
+  top: 265px;
+}
+.card:nth-child(37) .card__img {
+  background-image: url('./assets/img/board/brilliant.png');
+}
+.card:nth-child(37) .card__cost {
+  display: none;
+}
+.card:nth-child(38) {
+  left: 0;
+  top: 210px;
+}
+.card:nth-child(38) .card__img {
+  background-image: url('./assets/img/board/bmz.png');
+  background-size: 75%;
+}
+.card:nth-child(38) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(99, 98, 98);
+}
+
+.card:nth-child(39) {
+  left: 0;
+  top: 155px;
+}
+.card:nth-child(39) .card__img::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: -30px;
+  left: 0;
+  background: url('./assets/img/board/question.png') 0 0 no-repeat;
+  background-size: 40%;
+  transform: rotate(-90deg);
+}
+.card:nth-child(39) .card__cost {
+  display: none;
+}
+
+.card:nth-child(40) {
+  left: 0;
+  top: 100px;
+}
+.card:nth-child(40) .card__img {
+  background-image: url('./assets/img/board/belaruskali.png');
+  background-size: 98%;
+}
+.card:nth-child(40) .card__cost {
+  top: 0;
+  left: -25px;
+  background-color: rgb(99, 98, 98);
+}
