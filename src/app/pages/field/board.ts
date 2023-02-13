@@ -20,30 +20,30 @@ class Board {
     //new CornerCell(this.fieldContainer.node, source, );
   }
 
-  drawCells(widthCell: number, heightCell: number) {
-    new Cell(this.fieldContainer.node, widthCell, heightCell, '');
+  drawCells(widthCell: number, heightCell: number, id: number) {
+    new Cell(this.fieldContainer.node, widthCell, heightCell, id);
   }
 
 
   render() {    
-    new CornerCell(this.fieldContainer.node, '', 'corner-one');
-    for (let i = 0; i < 9; i++) {  
-      this.drawCells(55, 100);    
+    new CornerCell(this.fieldContainer.node, 'corner-one', '1');
+    for (let i = 2; i < 11; i++) {  
+      this.drawCells(55, 100, i);    
     }
-    new CornerCell(this.fieldContainer.node, '', 'corner-two');
+    new CornerCell(this.fieldContainer.node, 'corner-two', '11');
 
-    for (let i = 0; i < 9; i++) {
-      this.drawCells(100, 55);
+    for (let i = 12; i < 21; i++) {
+      this.drawCells(100, 55, i);
     }
 
-    new CornerCell(this.fieldContainer.node, '', 'corner-three');
-    for (let i = 0; i < 9; i++) {
-      this.drawCells(55, 100);
+    new CornerCell(this.fieldContainer.node, 'corner-three', '21');
+    for (let i = 22; i < 31; i++) {
+      this.drawCells(55, 100, i);
     }
-    new CornerCell(this.fieldContainer.node, '', 'corner-four');
+    new CornerCell(this.fieldContainer.node, 'corner-four', '31');
 
-    for (let i = 0; i < 9; i++) {
-      this.drawCells(100, 55);
+    for (let i = 32; i < 41; i++) {
+      this.drawCells(100, 55, i);
     }
     //new Control(this.container.node, 'div', 'board__fields');
     new Control(this.container.node, 'div', 'board__center');

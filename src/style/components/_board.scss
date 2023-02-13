@@ -4,11 +4,11 @@
   align-items: center;
   background-color: #262c2f;
   min-height: 100vh;
+  gap: 40px;
 
   .board {
     width: 695px;
     height: 695px;
-    border: 1px solid green;
     position: relative;
     background-color: white;
 
@@ -19,8 +19,7 @@
       top: 100px;
       left: 100px;
       margin: 1px;
-      padding: 8px;
-      border: 1px solid red;      
+      padding: 8px;  
       background-color: #262c2f;
     }
   }

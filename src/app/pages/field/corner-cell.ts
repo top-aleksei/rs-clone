@@ -2,11 +2,10 @@ import Control from '../../../common/common';
 
 class CornerCell {
   container: Control;
-  //imageCell: Control;
 
-  constructor(parent: HTMLElement, imageSrc: string, classCard: string) {
+  constructor(parent: HTMLElement, classCard: string, id: string) {
     this.container = new Control(parent, 'div', `corner-card ${classCard}`);
-    //this.imageCell = new Control(this.container.node, 'img', 'corner-card__img');
+    (<HTMLElement>this.container.node).id = id;
     this.render();
   }
 
