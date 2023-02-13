@@ -1,6 +1,7 @@
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import {
+  clearInRoomLS,
   getInRoomLS,
   getNameLS,
   setInRoomLS,
@@ -20,6 +21,7 @@ class Games {
     this.addWsListener();
     this.renderForm();
     this.list = new Control(this.container.node, 'div', 'games__list');
+    // clear in Room when rendering
   }
 
   renderTitle() {
@@ -36,6 +38,7 @@ class Games {
   }
 
   renderForm() {
+    clearInRoomLS();
     const createBTN = new Control(this.form.node, 'input', 'games__button');
     (createBTN.node as HTMLInputElement).type = 'submit';
     (createBTN.node as HTMLInputElement).value = 'create new game';
@@ -57,14 +60,11 @@ class Games {
 
   addWsListener() {
     ws.addEventListener('message', (e) => {
-      console.log(ws);
       const res = JSON.parse(e.data);
       if (res.event === 'rooms') {
-        // console.log(e.data);
         this.loadExistGames(res.games);
       }
       if (res.event === 'newroom') {
-        console.log(res.room);
         const room = new GameRoom(
           this.list.node,
           res.room,
@@ -89,13 +89,7 @@ class Games {
         };
         ws.send(JSON.stringify({ event: 'create', payload: roomInfo }));
         setInRoomLS();
-        this.disableEnableCreation();
-        // const room = new GameRoom(
-        //   this.list.node,
-        //   roomInfo,
-        //   this.disableEnableCreation.bind(this),
-        // );
-        // room.renderPlayers();
+        // this.disableEnableCreation();
       }
     };
   }

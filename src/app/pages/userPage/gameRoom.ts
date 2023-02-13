@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import {
@@ -44,17 +45,18 @@ class GameRoom {
           leave.node.onclick = this.leaveRoom.bind(this);
         }
       } else {
-        const empty = new Control(block.node, 'div', 'room__empty', '+');
-        if (!getInRoomLS()) {
-          empty.node.classList.add('active');
-          new Control(block.node, 'div', 'room__text', 'join');
-          empty.node.onclick = () => {
-            this.joinRoom();
-            // setInRoomLS();
-          };
-        }
+        new Control(block.node, 'div', 'room__empty', '+');
+        // if (!getInRoomLS()) {
+        //   empty.node.classList.add('active');
+        //   new Control(block.node, 'div', 'room__text', 'join');
+        //   empty.node.onclick = () => {
+        //     this.joinRoom();
+        // setInRoomLS();
+        // };
+        // }
       }
     }
+    this.enableDisableJoin();
   }
 
   joinRoom() {
@@ -83,26 +85,45 @@ class GameRoom {
       }),
     );
 
-    this.enableCreation();
+    // this.enableCreation();
   }
 
   addWsListener() {
     ws.addEventListener('message', (e) => {
       const res = JSON.parse(e.data);
       if (
+        // eslint-disable-next-line operator-linebreak
         res.event === 'changeroom' &&
         res.room.gameId === this.roomInfo.gameId
       ) {
         this.roomInfo = res.room;
-        console.log('res');
         if (res.room.nicknames.length === 0) {
           this.container.destroy();
+          this.enableDisableJoin();
         } else {
           this.renderPlayers();
-          // this.enableCreation();
         }
       }
     });
+  }
+
+  enableDisableJoin() {
+    const emptyEl = document.querySelectorAll('.room__empty');
+    if (getInRoomLS()) {
+      emptyEl.forEach((el) => {
+        el.classList.remove('active');
+        (el as HTMLElement).onclick = () => {};
+        el.nextSibling?.remove();
+      });
+    } else {
+      emptyEl.forEach((el) => {
+        el.classList.add('active');
+        (el as HTMLElement).onclick = this.joinRoom.bind(this);
+        const sign = new Control(null, 'div', 'room__text', 'join');
+        el.after(sign.node);
+      });
+    }
+    this.enableCreation();
   }
 }
 
