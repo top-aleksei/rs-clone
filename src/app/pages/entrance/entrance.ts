@@ -1,4 +1,6 @@
 import Control from '../../../common/common';
+import { getNameLS } from '../../localStorage/localStorage';
+import UserPage from '../userPage/userPage';
 import LogIn from './login';
 import Registrate from './registrate';
 
@@ -14,16 +16,23 @@ class Entrance {
   }
 
   render() {
-    new Control(this.btns.node, 'div', 'entrance__sign');
-    new Control(
-      this.btns.node,
-      'button',
-      'entrance__btn registrate',
-      'REGISTRATE',
-    );
-    new Control(this.btns.node, 'button', 'entrance__btn login', 'LOGIN');
+    this.btns.node.innerHTML = '';
+    const name = getNameLS();
+    if (name) {
+      const page = new UserPage(this.btns.node, this.render.bind(this));
+      page.render();
+    } else {
+      new Control(this.btns.node, 'div', 'entrance__sign');
+      new Control(
+        this.btns.node,
+        'button',
+        'entrance__btn registrate',
+        'REGISTRATE',
+      );
+      new Control(this.btns.node, 'button', 'entrance__btn login', 'LOGIN');
 
-    this.addListenrs();
+      this.addListenrs();
+    }
   }
 
   addListenrs() {
@@ -33,14 +42,28 @@ class Entrance {
       if (target && btns.includes(target)) {
         this.btns.node.innerHTML = '';
         if (target === btns[0]) {
-          const log = new LogIn(this.btns.node, this.render.bind(this));
-          log.render();
+          this.showLogIn();
         } else if (target === btns[1]) {
-          const reg = new Registrate(this.btns.node, this.render.bind(this));
-          reg.render();
+          this.showRegistrate();
         }
       }
     });
+  }
+
+  showLogIn() {
+    this.btns.node.innerHTML = '';
+    const log = new LogIn(this.btns.node, this.render.bind(this));
+    log.render();
+  }
+
+  showRegistrate() {
+    this.btns.node.innerHTML = '';
+    const reg = new Registrate(
+      this.btns.node,
+      this.render.bind(this),
+      this.showLogIn.bind(this),
+    );
+    reg.render();
   }
 }
 

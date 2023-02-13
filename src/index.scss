@@ -16,9 +16,9 @@
 
 // 5. Components
 @import 'style/components/entrance.scss', 'style/components/corner-cel',  'style/components/board',
-'style/components/cell.scss';
+'style/components/cell.scss', 'style/components/games.scss', 'style/components/room.scss';
 
 // 6. Page-specific styles
-
+@import 'style/pages/userPage.scss';
 // 7. Themes
 @import 'style/themes/default';
