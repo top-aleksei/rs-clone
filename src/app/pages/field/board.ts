@@ -16,10 +16,6 @@ class Board {
     this.render();
   }
 
-  drawCornerCells(source: string) {
-    //new CornerCell(this.fieldContainer.node, source, );
-  }
-
   drawCells(widthCell: number, heightCell: number, id: number) {
     new Cell(this.fieldContainer.node, widthCell, heightCell, id);
   }
