@@ -22,19 +22,35 @@
   &__empty {
     width: 65px;
     height: 65px;
-    display: flex;
+    // display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    color: rgba(0, 0, 0, 0.2);
-    @include font(2.2rem, 2.2rem, 400);
-  }
-  .active {
+    border: 2px solid rgb(0, 0, 0);
+    // color: rgba(0, 0, 0, 0.2);
     cursor: pointer;
     color: black;
-    border-color: black;
+    @include font(2.2rem, 2.2rem, 400);
+    display: none;
+    &-copy {
+      width: 65px;
+      height: 65px;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+      color: rgba(0, 0, 0, 0.2);
+      @include font(2.2rem, 2.2rem, 400);
+    }
   }
+  .active {
+    display: flex;
+    // cursor: pointer;
+    // color: black;
+    // border-color: black;
+  }
+
   &__player {
     position: relative;
   }

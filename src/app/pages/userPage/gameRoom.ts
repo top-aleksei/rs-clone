@@ -45,15 +45,12 @@ class GameRoom {
           leave.node.onclick = this.leaveRoom.bind(this);
         }
       } else {
-        new Control(block.node, 'div', 'room__empty', '+');
-        // if (!getInRoomLS()) {
-        //   empty.node.classList.add('active');
-        //   new Control(block.node, 'div', 'room__text', 'join');
-        //   empty.node.onclick = () => {
-        //     this.joinRoom();
-        // setInRoomLS();
-        // };
-        // }
+        const empty = new Control(block.node, 'div', 'room__empty', 'join');
+        new Control(block.node, 'div', 'room__empty-copy', 'join');
+
+        empty.node.onclick = () => {
+          this.joinRoom();
+        };
       }
     }
     this.enableDisableJoin();
@@ -84,8 +81,6 @@ class GameRoom {
         payload: { gameId: this.roomInfo.gameId, nickname: this.name },
       }),
     );
-
-    // this.enableCreation();
   }
 
   addWsListener() {
@@ -109,19 +104,17 @@ class GameRoom {
 
   enableDisableJoin() {
     const emptyEl = document.querySelectorAll('.room__empty');
+    const emptyCopyEl = document.querySelectorAll('.room__empty-copy');
     if (getInRoomLS()) {
       emptyEl.forEach((el) => {
         el.classList.remove('active');
-        (el as HTMLElement).onclick = () => {};
-        el.nextSibling?.remove();
       });
+      emptyCopyEl.forEach((el) => el.classList.add('active'));
     } else {
       emptyEl.forEach((el) => {
         el.classList.add('active');
-        (el as HTMLElement).onclick = this.joinRoom.bind(this);
-        const sign = new Control(null, 'div', 'room__text', 'join');
-        el.after(sign.node);
       });
+      emptyCopyEl.forEach((el) => el.classList.remove('active'));
     }
     this.enableCreation();
   }
