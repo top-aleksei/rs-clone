@@ -3,3 +3,9 @@ export interface Player {
   name: string;
   bank: number;
 }
+
+export interface Room {
+  gameId: number;
+  qty: number;
+  nicknames: string[];
+}
