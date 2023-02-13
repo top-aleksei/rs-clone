@@ -1,8 +1,10 @@
-// eslint-disable-next-line import/prefer-default-export
-export const ws = new WebSocket('ws://localhost:14000');
+// eslint-disable-next-line import/prefer-default-export, import/no-mutable-exports
+export let ws: WebSocket;
 
 // ws.onopen = () => {
-//   const name = getNameLS() || '';
-//   ws.send(name);
 //   console.log(ws);
 // };
+
+export function createConnection() {
+  ws = new WebSocket('ws://localhost:14000');
+}

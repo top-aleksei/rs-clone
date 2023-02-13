@@ -1,4 +1,5 @@
 import Control from '../../../common/common';
+import { createConnection } from '../../controller/socket';
 import { clearNameLS, getNameLS } from '../../localStorage/localStorage';
 import Games from './games';
 
@@ -9,6 +10,7 @@ class UserPage {
   constructor(parent: HTMLElement, startPage: () => void) {
     this.container = new Control(parent, 'div', 'user-page');
     this.startPage = startPage;
+    createConnection();
   }
 
   render() {
