@@ -23,6 +23,7 @@ class Game {
     if (this.name === this.gameInfo.activePlayer) {
       bord.renderThrowDicePopup();
     }
+    console.log(this.gameInfo.players)
   }
 }
 
