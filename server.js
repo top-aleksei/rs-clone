@@ -33,7 +33,7 @@ function start() {
     const gamesNow = [];
     for (var key in games) {
       let game = {
-        id: key,
+        gameId: key,
         qty: games[key].qty,
         nicknames: games[key].nicknames,
       };
