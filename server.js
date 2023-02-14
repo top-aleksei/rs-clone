@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 const games = {};
 const players = new Set();
+const colors = ['red', 'green', 'blue', 'yellow'];
 
 const app = express();
 const port = 13500;
@@ -57,7 +58,10 @@ function start() {
       ) {
         initGames(wsClient, req);
         multicast(req);
-      } else broadcast(req);
+      } else {
+        logic(req);
+        broadcast(req);
+      }
     });
 
     wsClient.on('close', async () => {
@@ -90,6 +94,7 @@ function initGames(ws, req) {
     if (!games[req.payload.gameId]) {
       games[req.payload.gameId] = {};
       //games[req.gameId].canPlay = false;
+      games[req.payload.gameId].gameId = req.payload.gameId;
       games[req.payload.gameId].players = [ws];
       games[req.payload.gameId].nicknames = req.payload.nicknames;
       //games[gameId].activePlayer = null;
@@ -190,6 +195,30 @@ function multicast(req) {
     console.log(`sending to ${client.nickname}:`, JSON.stringify(res));
     client.send(JSON.stringify(res));
   });
+
+  //если в конате все игроки - начать игру (разослать броадкаст)
+  if (
+    games[req.payload.gameId].players.length === games[req.payload.gameId].qty
+  ) {
+    //задать все свойства плееру
+    games[req.payload.gameId].players.map((player, index) => {
+      player.position = 1;
+      player.color = colors[index];
+    });
+    //задать свойства для game
+    games[req.payload.gameId].activePlayer =
+      games[req.payload.gameId].nicknames[0];
+    games[req.payload.gameId].type = 'step';
+    const reqToStart = {
+      event: 'startGame',
+      payload: {
+        gameId: req.payload.gameId,
+      },
+    };
+    broadcast(reqToStart);
+  }
+
+  //если все вышли из комнаты - удалить комнату
   if (games[req.payload.gameId].players.length === 0) {
     delete games[req.payload.gameId];
   }
@@ -197,10 +226,48 @@ function multicast(req) {
 
 function broadcast(req) {
   let res;
-  const { id, name, gameId } = req.payload;
-  games[gameId].players.forEach((client) => {
+  games[req.payload.gameId].players.forEach((client) => {
     switch (req.event) {
-      case 'join':
+      case 'startGame':
+        {
+          res = {
+            event: 'startGame',
+            payload: {
+              gameId: req.payload.gameId,
+              activePlayer: games[req.payload.gameId].activePlayer,
+              type: games[req.payload.gameId].type,
+              players: games[req.payload.gameId].players.map((player) => {
+                return {
+                  nickname: player.nickname,
+                  position: player.position,
+                  color: player.color,
+                };
+              }),
+            },
+          };
+        }
+        break;
+
+      case 'step': {
+        res = {
+          event: 'stepping',
+          payload: {
+            gameId: req.payload.gameId,
+            activePlayer: games[req.payload.gameId].activePlayer,
+            type: games[req.payload.gameId].type,
+            players: games[req.payload.gameId].players.map((player) => {
+              return {
+                nickname: player.nickname,
+                position: player.position,
+                color: player.color,
+              };
+            }),
+            boneOne: req.payload.boneOne,
+            boneTwo: req.payload.boneTwo,
+          },
+        };
+      }
+      /*case 'join':
         res = {
           event: 'connectToPlay',
           payload: {
@@ -221,7 +288,7 @@ function broadcast(req) {
           },
         };
         break;
-      /*  case 'going':
+        case 'going':
         if (req.payload.id === games[gameId].whoGo) {
           games[gameId].action = 'finishGo';
           if (client.id === games[gameId].whoGo) client.position += 1;
@@ -284,9 +351,28 @@ function broadcast(req) {
         };
         break;
     }
-    console.log('sending:', res);
+    console.log(`sending to: ${client.nickname}:`, JSON.stringify(res));
     client.send(JSON.stringify(res));
   });
+}
+
+function logic(req) {
+  switch (req.event) {
+    case 'step':
+      req.payload.boneOne = Math.floor(Math.random() * 6) + 1;
+      req.payload.boneTwo = Math.floor(Math.random() * 6) + 1;
+      games[req.payload.gameId].players = games[req.payload.gameId].players.map(
+        (client) => {
+          if (client.nickname === req.payload.nickname) {
+            client.position =
+              client.position + req.payload.boneOne + req.payload.boneTwo;
+          }
+          return;
+        }
+      );
+      games[req.payload.gameId].type = 'next';
+      break;
+  }
 }
 
 start();
