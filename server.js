@@ -49,7 +49,7 @@ function start() {
 
     wsClient.on('message', async (message) => {
       const req = JSON.parse(message.toString());
-      console.log(req);
+      console.log(`Coming message: ${JSON.stringify(req)}`);
 
       if (
         req.event === 'create' ||
@@ -248,25 +248,27 @@ function broadcast(req) {
         }
         break;
 
-      case 'step': {
-        res = {
-          event: 'stepping',
-          payload: {
-            gameId: req.payload.gameId,
-            activePlayer: games[req.payload.gameId].activePlayer,
-            type: games[req.payload.gameId].type,
-            players: games[req.payload.gameId].players.map((player) => {
-              return {
-                nickname: player.nickname,
-                position: player.position,
-                color: player.color,
-              };
-            }),
-            boneOne: req.payload.boneOne,
-            boneTwo: req.payload.boneTwo,
-          },
-        };
-      }
+      case 'step':
+        {
+          res = {
+            event: 'stepping',
+            payload: {
+              gameId: req.payload.gameId,
+              activePlayer: games[req.payload.gameId].activePlayer,
+              type: games[req.payload.gameId].type,
+              players: games[req.payload.gameId].players.map((player) => {
+                return {
+                  nickname: player.nickname,
+                  position: player.position,
+                  color: player.color,
+                };
+              }),
+              boneOne: req.payload.boneOne,
+              boneTwo: req.payload.boneTwo,
+            },
+          };
+        }
+        break;
       /*case 'join':
         res = {
           event: 'connectToPlay',
@@ -367,7 +369,7 @@ function logic(req) {
             client.position =
               client.position + req.payload.boneOne + req.payload.boneTwo;
           }
-          return;
+          return client;
         }
       );
       games[req.payload.gameId].type = 'next';
