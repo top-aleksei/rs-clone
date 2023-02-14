@@ -1,13 +1,16 @@
 /* eslint-disable no-param-reassign */
 import Control from '../../../common/common';
+import { changeHash } from '../../controller/routing';
 import { ws } from '../../controller/socket';
 import {
   clearInRoomLS,
   getInRoomLS,
   getNameLS,
+  // setInGameLS,
   setInRoomLS,
 } from '../../localStorage/localStorage';
 import { Room } from '../../types/game';
+import Game from '../field/game';
 
 class GameRoom {
   container: Control;
@@ -99,6 +102,18 @@ class GameRoom {
           this.renderPlayers();
         }
       }
+      // temp
+      if (res.event === 'startGame') {
+        const roomId = res.payload.gameId;
+        // setInGameLS(roomId);
+        changeHash(roomId);
+        const { body } = document;
+        body.innerHTML = '';
+        const page = new Game(body, res.payload);
+        page.render();
+        // console.log(res);
+      }
+      // temp
     });
   }
 

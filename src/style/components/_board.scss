@@ -12,14 +12,14 @@
     position: relative;
     background-color: white;
 
-    &__center{
+    &__center {
       width: 493px;
       height: 493px;
       position: absolute;
       top: 100px;
       left: 100px;
       margin: 1px;
-      padding: 8px;  
+      padding: 8px;
       background-color: #262c2f;
     }
   }
@@ -34,14 +34,17 @@
   padding: 10px;
   background-color: #161a1b;
   margin: 30px;
+  &_active {
+    transform: scale(1.1);
+  }
 
   &__nick {
     color: aliceblue;
     font-size: 18px;
   }
 
-  &__money {    
-    color: rgb(177, 190, 201);    
+  &__money {
+    color: rgb(177, 190, 201);
     font-size: 22px;
   }
 }

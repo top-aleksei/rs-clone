@@ -1,30 +1,39 @@
 import Control from '../../../common/common';
 import CornerCell from './corner-cell';
 import Cell from './cell';
+import { GameInfo } from '../../types/game';
+import { ws } from '../../controller/socket';
+import { getNameLS } from '../../localStorage/localStorage';
 
-const cornerImageSource = [
-  './assets/img/board/start.png',
-]
+const cornerImageSource = ['./assets/img/board/start.png'];
 
 class Board {
   container: Control;
   fieldContainer: Control;
+  fieldCenter: Control;
+  gameInfo: GameInfo;
+  name: string;
 
-  constructor(parent: HTMLElement) {
+  constructor(parent: HTMLElement, gameInfo: GameInfo) {
+    this.name = getNameLS() || '';
     this.container = new Control(parent, 'div', 'board');
-    this.fieldContainer = new Control(this.container.node, 'div', 'board__fields');
-    this.render();
+    this.gameInfo = gameInfo;
+    this.fieldContainer = new Control(
+      this.container.node,
+      'div',
+      'board__fields',
+    );
+    this.fieldCenter = new Control(this.container.node, 'div', 'board__center');
   }
 
   drawCells(widthCell: number, heightCell: number, id: number) {
     new Cell(this.fieldContainer.node, widthCell, heightCell, id);
   }
 
-
-  render() {    
+  render() {
     new CornerCell(this.fieldContainer.node, 'corner-one', '1');
-    for (let i = 2; i < 11; i++) {  
-      this.drawCells(55, 100, i);    
+    for (let i = 2; i < 11; i++) {
+      this.drawCells(55, 100, i);
     }
     new CornerCell(this.fieldContainer.node, 'corner-two', '11');
 
@@ -42,9 +51,23 @@ class Board {
       this.drawCells(100, 55, i);
     }
     //new Control(this.container.node, 'div', 'board__fields');
-    new Control(this.container.node, 'div', 'board__center');
+    // new Control(this.container.node, 'div', 'board__center');
     //new Control(this.container.node, 'div', 'board__tokens');
-    
+  }
+  renderThrowDicePopup() {
+    const container = new Control(this.fieldCenter.node, 'div', 'popup');
+    const rollButton = new Control(container.node, 'div', 'popup__roll');
+    rollButton.node.onclick = () => {
+      const data = {
+        event: 'step',
+        payload: {
+          gameId: this.gameInfo.gameId,
+          nickname: this.name,
+        },
+      };
+      ws.send(JSON.stringify(data));
+      container.destroy();
+    };
   }
 }
 

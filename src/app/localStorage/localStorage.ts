@@ -21,3 +21,15 @@ export function getInRoomLS() {
 export function clearInRoomLS() {
   localStorage.removeItem('isInRoom');
 }
+
+export function setInGameLS(gameId: number) {
+  localStorage.setItem('currentGame', String(gameId));
+}
+
+export function getIngameLS() {
+  return localStorage.getItem('currentGame');
+}
+
+export function clearInGameLS() {
+  localStorage.removeItem('currentGame');
+}

@@ -1,22 +1,33 @@
 import Control from '../../../common/common';
+import { GameInfo } from '../../types/game';
 import PlayersCard from './player-card';
-
-const tempPlayers = [
-  { id: 1, name: 'Leha', bank: 10000 },
-  { id: 2, name: 'Nike', bank: 10000 },
-  { id: 3, name: 'Poznerrr', bank: 10000 },
-];
 
 class Players {
   container: Control;
+  gameInfo: GameInfo;
 
-  constructor(parent: HTMLElement) {
+  constructor(parent: HTMLElement, gameInfo: GameInfo) {
     this.container = new Control(parent, 'div', 'players');
+    this.gameInfo = gameInfo;
     this.render();
   }
 
   render() {
-    tempPlayers.forEach((el) => new PlayersCard(this.container.node, el));
+    this.gameInfo.players.forEach(
+      (el) => new PlayersCard(this.container.node, el),
+    );
+    this.showCurrentPlayer();
+  }
+
+  showCurrentPlayer() {
+    const players = this.container.node.children;
+    [...players].forEach((el) => {
+      if (el.id === `card-${this.gameInfo.activePlayer}`) {
+        el.classList.add('players-card_active');
+      } else {
+        el.classList.remove('players-card_active');
+      }
+    });
   }
 }
 
