@@ -292,6 +292,20 @@ function broadcast(req) {
           };
         }
         break;
+
+      case 'chatMessage':
+        {
+          res = {
+            event: 'chatMessage',
+            payload: {
+              gameId: req.payload.gameId,
+              nickname: req.payload.nickname,
+              message: req.payload.message,
+              color: req.payload.color,
+            },
+          };
+        }
+        break;
       /*case 'join':
         res = {
           event: 'connectToPlay',
@@ -412,6 +426,13 @@ function logic(req) {
         games[req.payload.gameId].type = 'step';
       }
       break;
+
+    case 'chatMessage': {
+      const actualPlayer = games[req.payload.gameId].players.filter(
+        (player) => player.nickname === req.payload.nickname
+      )[0];
+      req.payload.color = actualPlayer.color;
+    }
   }
 }
 
