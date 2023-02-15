@@ -2,10 +2,10 @@ import Control from '../../../common/common';
 import CornerCell from './corner-cell';
 import Cell from './cell';
 import { GameInfo } from '../../types/game';
-// import { ws } from '../../controller/socket';
+import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
 import CenterItem from './centerItem';
-
+import PlayersToken from './token';
 // const cornerImageSource = ['./assets/img/board/start.png'];
 
 class Board {
@@ -56,7 +56,13 @@ class Board {
     }
     // new Control(this.container.node, 'div', 'board__fields');
     // new Control(this.container.node, 'div', 'board__center');
-    // new Control(this.container.node, 'div', 'board__tokens');
+    //new Control(this.container.node, 'div', 'board__tokens');
+    this.renderTokens();
+  }
+  renderTokens() {
+    this.gameInfo.players.forEach(
+      (el) => new PlayersToken(this.container.node, el),
+    );
   }
   // renderThrowDicePopup() {
   //   const container = new Control(this.fieldCenter.node, 'div', 'popup');
