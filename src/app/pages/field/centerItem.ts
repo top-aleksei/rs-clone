@@ -43,6 +43,11 @@ class CenterItem {
       container.destroy();
     };
   }
+
+  addMessage(el: HTMLElement) {
+    this.chat.node.append(el);
+    this.chat.node.scrollTop = this.chat.node.scrollHeight;
+  }
 }
 
 export default CenterItem;

@@ -1,4 +1,5 @@
 import Control from '../../../common/common';
+import { createMessageThrow } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
 import { GameInfo } from '../../types/game';
@@ -7,23 +8,28 @@ import Players from './players';
 
 class Game {
   container: Control;
+  table: Control;
+  board: Board;
+  players: Players;
   gameInfo: GameInfo;
   name: string;
 
   constructor(parent: HTMLElement, gameInfo: GameInfo) {
-    this.container = new Control(parent, 'div', 'game');
-    this.gameInfo = gameInfo;
     this.name = getNameLS() || '';
+    this.container = new Control(parent, 'div', 'game');
+    this.table = new Control(parent, 'div', 'table');
+    this.gameInfo = gameInfo;
+    this.players = new Players(this.table.node, this.gameInfo);
+    this.board = new Board(this.table.node, this.gameInfo);
     this.addWsLitener();
+    this.activePlayerStartStep();
   }
 
-  render() {
-    const table = new Control(this.container.node, 'div', 'table');
-    new Players(table.node, this.gameInfo);
-    const bord = new Board(table.node, this.gameInfo);
-    bord.render();
+  activePlayerStartStep() {
+    // new Players(this.table.node, this.gameInfo);
+    // const bord = new Board(table.node, this.gameInfo);
     if (this.name === this.gameInfo.activePlayer) {
-      bord.fieldCenter.renderThrowDicePopup();
+      this.board.fieldCenter.renderThrowDicePopup();
     }
   }
 
@@ -41,12 +47,14 @@ class Game {
         const dice = [data.boneOne, data.boneTwo];
         this.gameInfo = info;
 
-        const color = info.players.find(
-          (el) => el.nickname === info.activePlayer,
-        )?.color;
+        // eslint-disable-next-line operator-linebreak
+        const color =
+          // eslint-disable-next-line operator-linebreak
+          info.players.find((el) => el.nickname === info.activePlayer)?.color ||
+          'white';
 
-        console.log(this.gameInfo.activePlayer, 'выбросил', dice);
-        console.log('его цвет', color);
+        const messageHTML = createMessageThrow(color, info.activePlayer, dice);
+        this.board.fieldCenter.addMessage(messageHTML);
         // temp
         if (this.name === this.gameInfo.activePlayer) {
           ws.send(
@@ -60,6 +68,10 @@ class Game {
           );
         }
         // temp
+      } else if (res.event === 'startStep') {
+        this.gameInfo.activePlayer = res.payload.activePlayer;
+        this.players.showCurrentPlayer(this.gameInfo.activePlayer);
+        this.activePlayerStartStep();
       }
     });
   }
