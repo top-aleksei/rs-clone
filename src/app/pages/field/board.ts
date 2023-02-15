@@ -27,6 +27,7 @@ class Board {
     );
     // this.fieldCenter = new Control(this.container.node, 'div', 'board__center');
     this.fieldCenter = new CenterItem(this.container.node, this.gameInfo);
+    this.render();
   }
 
   drawCells(widthCell: number, heightCell: number, id: number) {

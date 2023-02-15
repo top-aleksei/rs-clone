@@ -109,8 +109,7 @@ class GameRoom {
         changeHash(roomId);
         const { body } = document;
         body.innerHTML = '';
-        const page = new Game(body, res.payload);
-        page.render();
+        new Game(body, res.payload);
         // console.log(res);
       }
       // temp
