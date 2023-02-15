@@ -1,0 +1,36 @@
+.chat {
+  position: absolute;
+  width: 477px;
+  height: 452px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  &__form {
+    position: absolute;
+    bottom: 8px;
+    width: 477px;
+    display: flex;
+    justify-content: space-between;
+    // height: 22px;
+  }
+  &__input {
+    width: 80%;
+    background-color: rgba($color: #494444, $alpha: 0.4);
+    border: none;
+    color: white;
+    outline: none;
+    @include font(1.4rem, 1, 4rem, 400);
+  }
+  &__btn {
+    background-color: rgba($color: #494444, $alpha: 0.4);
+    border: 1px solid white;
+    color: white;
+  }
+  &__item {
+    @include font(2.6rem, 2.6rem, 200);
+  }
+  &__message {
+    color: rgb(231, 224, 224);
+  }
+}

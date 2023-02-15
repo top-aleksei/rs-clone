@@ -13,7 +13,7 @@ export interface Room {
 export interface GameInfo {
   gameId: number;
   activePlayer: string;
-  nicknames: string[];
+  // nicknames: string[];
   type: string;
   players: PlayerInGame[];
 }
