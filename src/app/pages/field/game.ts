@@ -23,7 +23,7 @@ class Game {
     const bord = new Board(table.node, this.gameInfo);
     bord.render();
     if (this.name === this.gameInfo.activePlayer) {
-      bord.renderThrowDicePopup();
+      bord.fieldCenter.renderThrowDicePopup();
     }
   }
 
@@ -32,7 +32,7 @@ class Game {
       const res = JSON.parse(e.data);
       if (res.event === 'stepping') {
         const data = res.payload;
-        const info = {
+        const info: GameInfo = {
           gameId: data.gameId,
           activePlayer: data.activePlayer,
           type: data.type,
@@ -40,7 +40,13 @@ class Game {
         };
         const dice = [data.boneOne, data.boneTwo];
         this.gameInfo = info;
+
+        const color = info.players.find(
+          (el) => el.nickname === info.activePlayer,
+        )?.color;
+
         console.log(this.gameInfo.activePlayer, 'выбросил', dice);
+        console.log('его цвет', color);
         // temp
         if (this.name === this.gameInfo.activePlayer) {
           ws.send(
