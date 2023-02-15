@@ -81,7 +81,7 @@ function start() {
             nicknames: games[wsClient.gameId].nicknames,
           },
         };
-
+        initGames(wsClient, req);
         multicast(req);
       }
       players.delete(wsClient);
