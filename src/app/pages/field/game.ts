@@ -1,5 +1,5 @@
 import Control from '../../../common/common';
-import { createMessageThrow } from '../../controller/chat';
+import { createChatMessage, createMessageThrow } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
 import { GameInfo } from '../../types/game';
@@ -31,19 +31,23 @@ class Game {
     if (this.name === this.gameInfo.activePlayer) {
       this.board.fieldCenter.renderThrowDicePopup();
     }
-    console.log(this.gameInfo.players)
+    console.log(this.gameInfo.players);
   }
 
-  moveTokens() {    
+  moveTokens() {
     // const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
     // (<HTMLElement>activeToken).style.left = `${55 * this.gameInfo.players[0].position}px`;
   }
 
   addWsLitener() {
     ws.addEventListener('message', (e) => {
-      const currentPosition = 
-        this.gameInfo.players.find((el) => el.nickname === this.gameInfo.activePlayer)?.position || 1;
-        
+      // replace
+      const currentPosition =
+        this.gameInfo.players.find(
+          (el) => el.nickname === this.gameInfo.activePlayer,
+        )?.position || 1;
+      // replace
+
       const res = JSON.parse(e.data);
       if (res.event === 'stepping') {
         const data = res.payload;
@@ -61,12 +65,15 @@ class Game {
         const color =
           // eslint-disable-next-line operator-linebreak
           info.players.find((el) => el.nickname === info.activePlayer)?.color ||
-          'white';        
+          'white';
 
-        const nextPosition = 
-          info.players.find((el) => el.nickname === info.activePlayer)?.position || 1;
-          
-        const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
+        const nextPosition =
+          info.players.find((el) => el.nickname === info.activePlayer)
+            ?.position || 1;
+
+        const activeToken = document.getElementById(
+          `token-${this.gameInfo.activePlayer}`,
+        );
 
         let pos = currentPosition;
         let startDate = Date.now();
@@ -74,9 +81,9 @@ class Game {
           const duration = 0.1;
           pos = pos + duration;
           (<HTMLElement>activeToken).style.left = 55 * pos + 'px';
-      
+
           if (pos < nextPosition) {
-              requestAnimationFrame(myAnimation);
+            requestAnimationFrame(myAnimation);
           }
         }
         requestAnimationFrame(myAnimation);
@@ -100,6 +107,14 @@ class Game {
         this.gameInfo.activePlayer = res.payload.activePlayer;
         this.players.showCurrentPlayer(this.gameInfo.activePlayer);
         this.activePlayerStartStep();
+      } else if (res.event === 'chatMessage') {
+        const info = res.payload;
+        const messageHTML = createChatMessage(
+          info.color,
+          info.nickname,
+          info.message,
+        );
+        this.board.fieldCenter.addMessage(messageHTML);
       }
     });
   }

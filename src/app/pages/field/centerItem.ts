@@ -26,10 +26,26 @@ class CenterItem {
 
   renderChat() {
     const input = new Control(this.chatForm.node, 'input', 'chat__input');
+    input.node.setAttribute('name', 'message');
     (input.node as HTMLInputElement).placeholder = 'Start your message..';
     new Control(this.chatForm.node, 'button', 'chat__btn', 'send');
     this.chatForm.node.onsubmit = (e) => {
       e.preventDefault();
+      const formData = new FormData(this.chatForm.node as HTMLFormElement);
+      const message = formData.get('message');
+      if (message) {
+        ws.send(
+          JSON.stringify({
+            event: 'chatMessage',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+              message,
+            },
+          }),
+        );
+        (input.node as HTMLInputElement).value = '';
+      }
     };
   }
 
