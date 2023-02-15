@@ -1,9 +1,10 @@
 .popup {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  width: 470px;
+  height: 290px;
   &__roll {
-    width: 50%;
-    height: 50%;
+    width: 250px;
+    height: 250px;
     margin: 5% auto;
     background-image: url('./assets/img/rollTheDice.png');
     background-size: contain;
