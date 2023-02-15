@@ -206,8 +206,11 @@ function multicast(req) {
       player.color = colors[index];
     });
     //задать свойства для game
+    games[req.payload.gameId].activePlayerNumber = 0;
     games[req.payload.gameId].activePlayer =
-      games[req.payload.gameId].nicknames[0];
+      games[req.payload.gameId].nicknames[
+        games[req.payload.gameId].activePlayerNumber
+      ];
     games[req.payload.gameId].type = 'step';
     const reqToStart = {
       event: 'startGame',
@@ -229,6 +232,7 @@ function broadcast(req) {
   games[req.payload.gameId].players.forEach((client) => {
     switch (req.event) {
       case 'startGame':
+      case 'stepend':
         {
           res = {
             event: 'startGame',
@@ -373,6 +377,21 @@ function logic(req) {
         }
       );
       games[req.payload.gameId].type = 'next';
+      break;
+
+    case 'stepend':
+      if (req.payload.nickname === games[req.payload.gameId].activePlayer) {
+        games[req.payload.gameId].activePlayerNumber =
+          games[req.payload.gameId].activePlayerNumber + 1 <
+          games[req.payload.gameId].players.length
+            ? games[req.payload.gameId].activePlayerNumber + 1
+            : 0;
+        games[req.payload.gameId].activePlayer =
+          games[req.payload.gameId].nicknames[
+            games[req.payload.gameId].activePlayerNumber
+          ];
+        games[req.payload.gameId].type = 'step';
+      }
       break;
   }
 }
