@@ -31,10 +31,19 @@ class Game {
     if (this.name === this.gameInfo.activePlayer) {
       this.board.fieldCenter.renderThrowDicePopup();
     }
+    console.log(this.gameInfo.players)
+  }
+
+  moveTokens() {    
+    // const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
+    // (<HTMLElement>activeToken).style.left = `${55 * this.gameInfo.players[0].position}px`;
   }
 
   addWsLitener() {
     ws.addEventListener('message', (e) => {
+      const currentPosition = 
+        this.gameInfo.players.find((el) => el.nickname === this.gameInfo.activePlayer)?.position || 1;
+        
       const res = JSON.parse(e.data);
       if (res.event === 'stepping') {
         const data = res.payload;
@@ -51,7 +60,25 @@ class Game {
         const color =
           // eslint-disable-next-line operator-linebreak
           info.players.find((el) => el.nickname === info.activePlayer)?.color ||
-          'white';
+          'white';        
+
+        const nextPosition = 
+          info.players.find((el) => el.nickname === info.activePlayer)?.position || 1;
+          
+        const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
+
+        let pos = currentPosition;
+        let startDate = Date.now();
+        function myAnimation() {
+          const duration = 0.1;
+          pos = pos + duration;
+          (<HTMLElement>activeToken).style.left = 55 * pos + 'px';
+      
+          if (pos < nextPosition) {
+              requestAnimationFrame(myAnimation);
+          }
+        }
+        requestAnimationFrame(myAnimation);
 
         const messageHTML = createMessageThrow(color, info.activePlayer, dice);
         this.board.fieldCenter.addMessage(messageHTML);
