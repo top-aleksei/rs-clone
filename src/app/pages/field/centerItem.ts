@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import diceRoller from 'dice-roller-3d';
+
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
@@ -7,6 +10,7 @@ class CenterItem {
   container: Control;
   chat: Control;
   chatForm: Control;
+  dices: Control;
   name: string;
   gameInfo: GameInfo;
 
@@ -16,6 +20,7 @@ class CenterItem {
     this.container = new Control(parent, 'div', 'board__center');
     this.chat = new Control(this.container.node, 'div', 'chat');
     this.chatForm = new Control(this.container.node, 'form', 'chat__form');
+    this.dices = new Control(this.container.node, 'div', 'dices');
     this.renderChat();
   }
 
@@ -42,6 +47,14 @@ class CenterItem {
       ws.send(JSON.stringify(data));
       container.destroy();
     };
+  }
+
+  rollDiceAnimation(diceValues: number[]) {
+    diceRoller({
+      element: this.dices.node,
+      numberOfDice: 2,
+      values: diceValues,
+    });
   }
 
   addMessage(el: HTMLElement) {
