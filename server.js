@@ -232,10 +232,29 @@ function broadcast(req) {
   games[req.payload.gameId].players.forEach((client) => {
     switch (req.event) {
       case 'startGame':
-      case 'stepend':
         {
           res = {
             event: 'startGame',
+            payload: {
+              gameId: req.payload.gameId,
+              activePlayer: games[req.payload.gameId].activePlayer,
+              type: games[req.payload.gameId].type,
+              players: games[req.payload.gameId].players.map((player) => {
+                return {
+                  nickname: player.nickname,
+                  position: player.position,
+                  color: player.color,
+                };
+              }),
+            },
+          };
+        }
+        break;
+
+      case 'stepend':
+        {
+          res = {
+            event: 'startStep',
             payload: {
               gameId: req.payload.gameId,
               activePlayer: games[req.payload.gameId].activePlayer,
