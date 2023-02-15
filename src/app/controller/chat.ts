@@ -9,7 +9,7 @@ export function createMessageThrow(
   const elem = new Control(null, 'div', 'chat__item');
   const player = new Control(elem.node, 'span', 'chat__player', name);
   player.node.style.color = color;
-  const message = ` roll the dice with ${dice[0]} and ${dice[1]}`;
+  const message = ` rolled the dice with ${dice[0]} and ${dice[1]}`;
   new Control(elem.node, 'span', 'chat__message', message);
   return elem.node;
 }

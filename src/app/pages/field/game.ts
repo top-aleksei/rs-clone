@@ -54,6 +54,7 @@ class Game {
           players: data.players,
         };
         const dice = [data.boneOne, data.boneTwo];
+        this.board.fieldCenter.rollDiceAnimation(dice);
         this.gameInfo = info;
 
         // eslint-disable-next-line operator-linebreak
