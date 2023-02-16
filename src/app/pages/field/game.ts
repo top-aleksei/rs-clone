@@ -31,12 +31,118 @@ class Game {
     if (this.name === this.gameInfo.activePlayer) {
       this.board.fieldCenter.renderThrowDicePopup();
     }
-    console.log(this.gameInfo.players)
   }
 
-  moveTokens() {    
-    // const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
-    // (<HTMLElement>activeToken).style.left = `${55 * this.gameInfo.players[0].position}px`;
+  moveTokens(token: HTMLElement, currentPos: number, nextPos: number) {     
+    let animationTopId: number;
+    let animationBottomId: number;
+    let animationRightId: number;
+    let animationLeftId: number;
+
+    let posTopLine = currentPos;
+    let posRightLine = 1;
+    let posBottomLine = 1;
+    let posLeftLine = 1;
+
+    const centreAngle = 645;    
+    const duration = 0.1;
+
+    // const nextCell = document.getElementById(`${nextPos}`);
+    // const cellWidth = (<HTMLElement>nextCell).offsetWidth;
+    // const cellHeight = (<HTMLElement>nextCell).offsetHeight;
+
+    function animationTopLine() {
+      posTopLine += duration;
+              
+      token.style.top = '35px';
+      token.style.bottom = 'auto';
+      token.style.right = 'auto';
+      token.style.left = 55 * posTopLine + 'px';      
+      
+      if (posTopLine < nextPos) {
+        animationTopId = requestAnimationFrame(animationTopLine);
+      }
+      
+      let posTokenLeft = parseInt(token.style.left);
+      console.log(posTokenLeft)  
+      if(posTokenLeft > centreAngle) {
+        cancelAnimationFrame(animationTopId);
+        animationRightId = requestAnimationFrame(animationRightLine);
+      }
+    }
+    
+    function animationRightLine() {
+      posRightLine += duration;     
+
+      token.style.top = 55 * posRightLine + 'px';   
+      token.style.left = 'auto';   
+      token.style.right = '35px';   
+      token.style.bottom = 'auto';
+
+      if (posRightLine < nextPos - 10) {
+        animationRightId = requestAnimationFrame(animationRightLine);
+      }
+
+      let posTokenTop = parseInt(token.style.top); 
+      if(posTokenTop > centreAngle) {
+        cancelAnimationFrame(animationRightId);
+        animationBottomId = requestAnimationFrame(animationBottomLine);
+      }
+    }
+    
+    function animationBottomLine() {
+      posBottomLine += duration;
+      
+      //let posTokenLeftStart = token.offsetLeft;      
+      let posTokenRight = parseInt(token.style.right);      
+      token.style.left = 'auto';
+      token.style.right = 55 * posBottomLine + 'px';
+      token.style.top = 'auto';   
+      token.style.bottom = '30px';
+
+      if (posBottomLine < nextPos - 20) {
+        animationBottomId = requestAnimationFrame(animationBottomLine);
+      }
+      if(posTokenRight > centreAngle) {
+        cancelAnimationFrame(animationBottomId);
+        animationLeftId = requestAnimationFrame(animationLeftLine);
+      }
+    }
+
+    
+    function animationLeftLine() {
+      posLeftLine += duration;
+      
+      //let posTokenLeftStart = token.offsetLeft;      
+      let posTokenBottom = parseInt(token.style.bottom);      
+      token.style.top = 'auto';
+      token.style.left = '30px';
+      token.style.right = 'auto';      
+      token.style.bottom = 55 * posLeftLine + 'px';  
+      if (posLeftLine < nextPos - 30) {
+        animationLeftId = requestAnimationFrame(animationLeftLine);
+      }
+      if(posTokenBottom > 620) {
+        cancelAnimationFrame(animationLeftId);
+        animationTopId = requestAnimationFrame(animationTopLine);
+      }
+    }
+
+    if (currentPos < 11) {
+      animationTopId = requestAnimationFrame(animationTopLine);
+    }
+    if (currentPos >= 11 && currentPos < 21) {
+      posRightLine = currentPos - 10;
+      animationRightId = requestAnimationFrame(animationRightLine);
+    }
+    if (currentPos >= 21 && currentPos < 31) {      
+      posBottomLine = currentPos - 20;
+      animationBottomId = requestAnimationFrame(animationBottomLine);
+    }
+    if (currentPos >= 31) {      
+      posLeftLine = currentPos - 30;
+      animationLeftId = requestAnimationFrame(animationLeftLine);
+    }
   }
 
   addWsLitener() {
@@ -62,25 +168,15 @@ class Game {
           // eslint-disable-next-line operator-linebreak
           info.players.find((el) => el.nickname === info.activePlayer)?.color ||
           'white';        
-
         const nextPosition = 
-          info.players.find((el) => el.nickname === info.activePlayer)?.position || 1;
-          
-        const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);
-
-        let pos = currentPosition;
-        let startDate = Date.now();
-        function myAnimation() {
-          const duration = 0.1;
-          pos = pos + duration;
-          (<HTMLElement>activeToken).style.left = 55 * pos + 'px';
-      
-          if (pos < nextPosition) {
-              requestAnimationFrame(myAnimation);
-          }
-        }
-        requestAnimationFrame(myAnimation);
-
+          info.players.find((el) => el.nickname === info.activePlayer)?.position || 1;         
+        
+        const activeToken = document.getElementById(`token-${this.gameInfo.activePlayer}`);  
+        
+        setTimeout(()=> {
+          this.moveTokens(<HTMLElement>activeToken, currentPosition, nextPosition)
+        }, 2000);
+        
         const messageHTML = createMessageThrow(color, info.activePlayer, dice);
         this.board.fieldCenter.addMessage(messageHTML);
         // temp
