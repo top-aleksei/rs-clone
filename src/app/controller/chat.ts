@@ -21,6 +21,7 @@ export function createChatMessage(
   const elem = new Control(null, 'div', 'chat__item');
   const player = new Control(elem.node, 'span', 'chat__player', name);
   player.node.style.color = color;
-  new Control(elem.node, 'span', 'chat__message', message);
+  const text = new Control(elem.node, 'span', 'chat__message', ` "${message}"`);
+  text.node.style.fontStyle = 'italic';
   return elem.node;
 }
