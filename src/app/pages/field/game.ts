@@ -27,8 +27,6 @@ class Game {
   }
 
   activePlayerStartStep() {
-    // new Players(this.table.node, this.gameInfo);
-    // const bord = new Board(table.node, this.gameInfo);
     if (this.name === this.gameInfo.activePlayer) {
       this.board.fieldCenter.renderThrowDicePopup();
     }
@@ -52,13 +50,10 @@ class Game {
           type: data.type,
           players: data.players,
         };
-        const dice = [data.boneOne, data.boneTwo];
-        this.board.fieldCenter.rollDiceAnimation(dice);
+
         this.gameInfo = info;
 
-        // eslint-disable-next-line operator-linebreak
         const color =
-          // eslint-disable-next-line operator-linebreak
           info.players.find((el) => el.nickname === info.activePlayer)?.color ||
           'white';
         const nextPosition =
@@ -68,6 +63,16 @@ class Game {
         const activeToken = document.getElementById(
           `token-${this.gameInfo.activePlayer}`,
         );
+        if (data.type !== 'buying') {
+          const dice = [data.boneOne, data.boneTwo];
+          this.board.fieldCenter.rollDiceAnimation(dice);
+          const messageHTML = createMessageThrow(
+            color,
+            info.activePlayer,
+            dice,
+          );
+          this.board.fieldCenter.addMessage(messageHTML);
+        }
         // TEMP. REPLACE. BUY
         if (
           data.type === 'abilityToByu' &&
@@ -87,19 +92,14 @@ class Game {
           );
         }, 2000);
 
-        const messageHTML = createMessageThrow(color, info.activePlayer, dice);
-        this.board.fieldCenter.addMessage(messageHTML);
         // temp (add temp second condition)
-        if (
-          this.name === this.gameInfo.activePlayer &&
-          data.type !== 'abilityToByu'
-        ) {
+        if (this.name === this.gameInfo.activePlayer && data.type === 'next') {
           ws.send(
             JSON.stringify({
               event: 'stepend',
               payload: {
                 gameId: this.gameInfo.gameId,
-                nickname: this.gameInfo.activePlayer,
+                nickname: this.name,
               },
             }),
           );

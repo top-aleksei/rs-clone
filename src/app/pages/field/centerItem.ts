@@ -96,13 +96,14 @@ class CenterItem {
       );
       container.destroy();
     };
+
     decline.node.onclick = () => {
       ws.send(
         JSON.stringify({
           event: 'stepend',
           payload: {
             gameId: this.gameInfo.gameId,
-            nickname: this.gameInfo.activePlayer,
+            nickname: this.name,
           },
         }),
       );
