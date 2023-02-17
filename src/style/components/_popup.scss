@@ -13,4 +13,33 @@
       transform: scale(1.1);
     }
   }
+  &__message {
+    margin: 20px auto;
+    width: 90%;
+    background-color: rgba(221, 216, 216, 0.95);
+    padding: 9px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    border: 1px solid black;
+  }
+  &__text {
+    text-align: center;
+    @include font(2rem, 2rem, 500);
+  }
+  &__btn {
+    border: 1px solid black;
+    @include font(2rem, 2rem, 400); // border: none;
+    padding: 6px;
+    &-line {
+      display: flex;
+      justify-content: space-around;
+    }
+    &_green {
+      background-color: rgba(174, 218, 187, 0.9);
+    }
+    &_red {
+      background-color: rgba(243, 130, 130, 0.9);
+    }
+  }
 }
