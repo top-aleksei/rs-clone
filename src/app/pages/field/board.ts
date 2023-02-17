@@ -60,6 +60,173 @@ class Board {
       (el) => new PlayersToken(this.container.node, el),
     );
   }
+
+  moveTokens(token: HTMLElement, /*infoData: GameInfo,*/ currentPos: number, nextPos: number) {
+    let animationTopId: number;
+    let animationBottomId: number;
+    let animationRightId: number;
+    let animationLeftId: number;
+
+    // const currentPos =
+    //     this.gameInfo.players.find(
+    //       (el) => el.nickname === this.gameInfo.activePlayer,
+    //     )?.position || 1;
+
+    // const nextPos =
+    //   infoData.players.find((el) => el.nickname === infoData.activePlayer)
+    //     ?.position || 1;
+
+    let posTopLine = currentPos;
+    let posRightLine = 1;
+    let posBottomLine = 1;
+    let posLeftLine = 1;
+
+    
+
+    const centreAngle = 645;
+    const duration = 0.1;
+    const commonPosition = 
+      this.gameInfo.players.filter((el) => el.position === nextPos);
+    console.log(this.gameInfo)
+
+    function animationTopLine() {
+      posTopLine += duration;
+
+      token.style.bottom = 'auto';
+      token.style.right = 'auto';
+      token.style.left = 55 * posTopLine + 'px';
+      if (commonPosition.length === 2) {
+        token.style.top = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.top = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.top = '5px';
+      } else {
+        token.style.top = '35px';
+      }
+
+      if (posTopLine < nextPos) {
+        animationTopId = requestAnimationFrame(animationTopLine);
+      }
+
+      let posTokenLeft = parseInt(token.style.left);
+      if (posTokenLeft > centreAngle) {
+        cancelAnimationFrame(animationTopId);
+        animationRightId = requestAnimationFrame(animationRightLine);
+      }
+    }
+
+    function animationRightLine() {
+      posRightLine += duration;
+
+      token.style.top = 55 * posRightLine + 'px';   
+      token.style.left = 'auto';  
+      token.style.bottom = 'auto';
+
+      if(commonPosition.length === 2) {
+        token.style.right = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.right = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.right = '5px';
+      } else {   
+        token.style.right = '35px'; 
+      }
+
+      if (posRightLine < nextPos - 10) {
+        animationRightId = requestAnimationFrame(animationRightLine);
+      }
+
+      let posTokenTop = parseInt(token.style.top);
+      if (posTokenTop > centreAngle) {
+        cancelAnimationFrame(animationRightId);
+        animationBottomId = requestAnimationFrame(animationBottomLine);
+      }
+    }
+
+    function animationBottomLine() {
+      posBottomLine += duration;
+      
+      token.style.left = 'auto';
+      token.style.right = 55 * posBottomLine + 'px';
+      token.style.top = 'auto';  
+
+      if(commonPosition.length === 2) {
+        token.style.bottom = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.bottom = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.bottom = '5px';
+      } else {  
+        token.style.bottom = '35px'; 
+      }
+
+      if (posBottomLine < nextPos - 20) {
+        animationBottomId = requestAnimationFrame(animationBottomLine);
+      }
+
+      let posTokenRight = parseInt(token.style.right); 
+      if(posTokenRight > centreAngle) {
+        cancelAnimationFrame(animationBottomId);
+        animationLeftId = requestAnimationFrame(animationLeftLine);
+      }
+
+    }
+    
+    function animationLeftLine() {
+      posLeftLine += duration;
+      
+      token.style.top = 'auto';
+      token.style.right = 'auto';      
+      token.style.bottom = 55 * posLeftLine + 'px';
+      if(commonPosition.length === 2) {
+        token.style.left = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.left = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.left = '5px';
+      } else {        
+        token.style.left = '35px'; 
+      }
+      if (nextPos > 30 && nextPos <= 40) {
+        if (posLeftLine < nextPos - 30) {
+          animationLeftId = requestAnimationFrame(animationLeftLine);
+        }
+      } else if (nextPos < 10) {
+        if (posLeftLine < 41) {
+          animationLeftId = requestAnimationFrame(animationLeftLine);
+        } else {
+          cancelAnimationFrame(animationLeftId);
+          posTopLine = 1;
+          animationTopId = requestAnimationFrame(animationTopLine);
+        }
+      }
+      
+      
+      let posTokenBottom = parseInt(token.style.bottom);  
+      if(posTokenBottom > 620) {
+        cancelAnimationFrame(animationLeftId);
+        posTopLine = 1;
+        animationTopId = requestAnimationFrame(animationTopLine);
+      }
+    }
+
+    if (currentPos < 11) {
+      animationTopId = requestAnimationFrame(animationTopLine);
+    }
+    if (currentPos >= 11 && currentPos < 21) {
+      posRightLine = currentPos - 10;
+      animationRightId = requestAnimationFrame(animationRightLine);
+    }
+    if (currentPos >= 21 && currentPos < 31) {
+      posBottomLine = currentPos - 20;
+      animationBottomId = requestAnimationFrame(animationBottomLine);
+    }
+    if (currentPos >= 31) {
+      posLeftLine = currentPos - 30;
+      animationLeftId = requestAnimationFrame(animationLeftLine);
+    }
+  }
 }
 
 export default Board;
