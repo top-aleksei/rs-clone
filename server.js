@@ -533,6 +533,9 @@ function broadcast(req) {
             res.payload.buildName = req.payload.buildName;
             res.payload.buildCost = req.payload.buildCost;
           }
+          if (games[req.payload.gameId].type === 'buying') {
+            res.payload.byuing = req.payload.buildName;
+          }
         }
         break;
 
@@ -691,6 +694,28 @@ function logic(req) {
       else {
         games[req.payload.gameId].type = 'next';
       }
+      break;
+
+    case 'buying':
+      if (req.payload.nickname === games[req.payload.gameId].activePlayer) {
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].money =
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].money -
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].costBuy;
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].owner = games[req.payload.gameId].activePlayer;
+      }
+      games[req.payload.gameId].type = 'buying';
 
       break;
 
