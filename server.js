@@ -190,6 +190,7 @@ const positions = {
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    costParking: 1000,
   },
   31: {},
   32: {
@@ -335,11 +336,6 @@ function initGames(ws, req) {
       games[req.payload.gameId].qty = req.payload.qty;
       ws.nickname = req.payload.nicknames[0];
       ws.gameId = req.payload.gameId;
-      //console.log(ws.nickname);
-      /*ws.position = 1; //TODO: поставить позицию какую надо
-    ws.money = 1000; //TODO: поставить денег сколько надо
-    ws.owner = []; //TODO:это будет тут храниться чем владеет
-    */
     }
   } else if (req.event === 'join') {
     ws.nickname = req.payload.nickname;
@@ -537,6 +533,12 @@ function broadcast(req) {
             res.payload.buildName = req.payload.buildName;
             res.payload.buildCost = req.payload.buildCost;
           }
+          if (games[req.payload.gameId].type === 'payingTax') {
+            res.payload.buildName = req.payload.buildName;
+            res.payload.buildCost = req.payload.buildCost;
+            res.payload.ownerName = req.payload.ownerName;
+            res.payload.costParking = req.payload.costParking;
+          }
           /* if (games[req.payload.gameId].type === 'buying') {
             res.payload.byuing = req.payload.buildName;
           }*/
@@ -690,7 +692,7 @@ function logic(req) {
           games[req.payload.gameId].activePlayerNumber
         ].position -= 40;
 
-      // если позиция на здании
+      // если позиция на здании и свободна
       if (
         games[req.payload.gameId].positions[
           games[req.payload.gameId].players[
@@ -716,6 +718,49 @@ function logic(req) {
               games[req.payload.gameId].activePlayerNumber
             ].position
           ].costBuy;
+      }
+      //если позиция на здании и не свободна
+      else if (
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].hasOwnProperty('owner') &&
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].owner !== null
+      ) {
+        const ownerName =
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].owner;
+
+        const nickname = req.payload.nickname;
+
+        const build =
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ];
+
+        games[req.payload.gameId].players = games[
+          req.payload.gameId
+        ].players.map((player) => {
+          if (player.nickname === nickname) {
+            player.money -= build.costParking;
+          } else if (player.nickname === ownerName) {
+            player.money -= build.costParking;
+          }
+          return player;
+        });
+        games[req.payload.gameId].type = 'payingTax';
+        req.payload.ownerName = ownerName;
+        req.payload.costParking = build.costParking;
       }
       // остальное
       else {
