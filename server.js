@@ -438,6 +438,7 @@ function multicast(req) {
     games[req.payload.gameId].players.map((player, index) => {
       player.position = 1;
       player.color = colors[index];
+      player.money = 10000;
     });
     //задать свойства для game
     games[req.payload.gameId].positions = JSON.parse(JSON.stringify(positions));
@@ -479,6 +480,7 @@ function broadcast(req) {
                   nickname: player.nickname,
                   position: player.position,
                   color: player.color,
+                  money: player.money,
                 };
               }),
             },
@@ -499,6 +501,7 @@ function broadcast(req) {
                   nickname: player.nickname,
                   position: player.position,
                   color: player.color,
+                  money: player.money,
                 };
               }),
             },
@@ -519,6 +522,7 @@ function broadcast(req) {
                   nickname: player.nickname,
                   position: player.position,
                   color: player.color,
+                  money: player.money,
                 };
               }),
               boneOne: req.payload.boneOne,
