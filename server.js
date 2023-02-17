@@ -439,6 +439,7 @@ function multicast(req) {
       player.position = 1;
       player.color = colors[index];
       player.money = 10000;
+      player.owner = [];
     });
     //задать свойства для game
     games[req.payload.gameId].positions = JSON.parse(JSON.stringify(positions));
@@ -481,6 +482,7 @@ function broadcast(req) {
                   position: player.position,
                   color: player.color,
                   money: player.money,
+                  owner: player.owner,
                 };
               }),
             },
@@ -502,6 +504,7 @@ function broadcast(req) {
                   position: player.position,
                   color: player.color,
                   money: player.money,
+                  owner: player.owner,
                 };
               }),
             },
@@ -523,6 +526,7 @@ function broadcast(req) {
                   position: player.position,
                   color: player.color,
                   money: player.money,
+                  owner: player.owner,
                 };
               }),
               boneOne: req.payload.boneOne,
@@ -554,6 +558,7 @@ function broadcast(req) {
                   position: player.position,
                   color: player.color,
                   money: player.money,
+                  owner: player.owner,
                 };
               }),
             },
@@ -736,6 +741,9 @@ function logic(req) {
             games[req.payload.gameId].activePlayerNumber
           ].position
         ].owner = games[req.payload.gameId].activePlayer;
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].owner.push(req.payload.buildName);
       }
       games[req.payload.gameId].type = 'buying';
 
