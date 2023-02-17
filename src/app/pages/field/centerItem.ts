@@ -65,6 +65,51 @@ class CenterItem {
     };
   }
 
+  renderBuyPopUp(name: string, price: number) {
+    const container = new Control(this.container.node, 'div', 'popup');
+    const wrapper = new Control(container.node, 'div', 'popup__message');
+    const text = `Do you want to buy ${name} for ${price}$`;
+    new Control(wrapper.node, 'p', 'popup__text', text);
+    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+    const accept = new Control(
+      btns.node,
+      'button',
+      'popup__btn popup__btn_green',
+      'BUY',
+    );
+    const decline = new Control(
+      btns.node,
+      'button',
+      'popup__btn popup__btn_red',
+      'DECLINE',
+    );
+    accept.node.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          event: 'buying',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+            buildName: name,
+          },
+        }),
+      );
+      container.destroy();
+    };
+    decline.node.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          event: 'stepend',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.gameInfo.activePlayer,
+          },
+        }),
+      );
+      container.destroy();
+    };
+  }
+
   rollDiceAnimation(diceValues: number[]) {
     diceRoller({
       element: this.dices.node,
