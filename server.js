@@ -11,6 +11,240 @@ const colors = ['red', 'green', 'blue', 'yellow'];
 const app = express();
 const port = 13500;
 
+const positions = {
+  1: {},
+  2: {
+    type: 'build',
+    name: 'galanteya',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  3: {},
+  4: {
+    type: 'build',
+    name: 'makey',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  5: {},
+  6: {
+    type: 'build',
+    name: 'belshina',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  7: {
+    type: 'build',
+    name: 'milavitsa',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  8: {},
+  9: {
+    type: 'build',
+    name: 'markformelle',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  10: {
+    type: 'build',
+    name: 'svitanak',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  11: {},
+  12: {
+    type: 'build',
+    name: 'kommunarka',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  13: {
+    type: 'build',
+    name: 'horizont',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+  },
+  14: {
+    type: 'build',
+    name: 'spartak',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  15: {
+    type: 'build',
+    name: 'krasnyi',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  16: {
+    type: 'build',
+    name: 'maz',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+  },
+  17: {
+    type: 'build',
+    name: 'lidskaye',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  18: {},
+  19: {
+    type: 'build',
+    name: 'alivarya',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  20: {
+    type: 'build',
+    name: 'kristall',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+  },
+  21: {},
+  22: {
+    type: 'build',
+    name: 'belita',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  23: {},
+  24: {
+    type: 'build',
+    name: 'relodis',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  25: {
+    type: 'build',
+    name: 'luxvisage',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+  },
+  26: {
+    type: 'build',
+    name: 'belaz',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  27: {
+    type: 'build',
+    name: 'aist',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  28: {
+    type: 'build',
+    name: 'krakken',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  29: {
+    type: 'build',
+    name: 'atlant',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  30: {
+    type: 'build',
+    name: 'minsk',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+  },
+  31: {},
+  32: {
+    type: 'build',
+    name: 'shagovita',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  33: {
+    type: 'build',
+    name: 'belwest',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  34: {},
+  35: {
+    type: 'build',
+    name: 'marko',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  36: {
+    type: 'build',
+    name: 'belarus',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  37: {},
+  38: {
+    type: 'build',
+    name: 'bmz',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+  39: {},
+  40: {
+    type: 'build',
+    name: 'belaruskali',
+    owner: null,
+    costBuy: 1000,
+    costSell: 500,
+    costParking: 1000,
+  },
+};
+
 app.use(morgan('tiny'));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -206,6 +440,7 @@ function multicast(req) {
       player.color = colors[index];
     });
     //задать свойства для game
+    games[req.payload.gameId].positions = JSON.parse(JSON.stringify(positions));
     games[req.payload.gameId].activePlayerNumber = 0;
     games[req.payload.gameId].activePlayer =
       games[req.payload.gameId].nicknames[
@@ -290,6 +525,10 @@ function broadcast(req) {
               boneTwo: req.payload.boneTwo,
             },
           };
+          if (games[req.payload.gameId].type === 'abilityToByu') {
+            res.payload.buildName = req.payload.buildName;
+            res.payload.buildCost = req.payload.buildCost;
+          }
         }
         break;
 
@@ -400,16 +639,55 @@ function logic(req) {
     case 'step':
       req.payload.boneOne = Math.floor(Math.random() * 6) + 1;
       req.payload.boneTwo = Math.floor(Math.random() * 6) + 1;
-      games[req.payload.gameId].players = games[req.payload.gameId].players.map(
-        (client) => {
-          if (client.nickname === req.payload.nickname) {
-            client.position =
-              client.position + req.payload.boneOne + req.payload.boneTwo;
-          }
-          return client;
-        }
-      );
-      games[req.payload.gameId].type = 'next';
+      games[req.payload.gameId].players[
+        games[req.payload.gameId].activePlayerNumber
+      ].position =
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].position +
+        req.payload.boneOne +
+        req.payload.boneTwo;
+      if (
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].position > 40
+      )
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].position -= 40;
+
+      // если позиция на здании
+      if (
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].hasOwnProperty('owner') &&
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].owner === null
+      ) {
+        games[req.payload.gameId].type = 'abilityToByu';
+        req.payload.buildName =
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].name;
+        req.payload.buildCost =
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].costBuy;
+      }
+      // остальное
+      else {
+        games[req.payload.gameId].type = 'next';
+      }
+
       break;
 
     case 'stepend':
