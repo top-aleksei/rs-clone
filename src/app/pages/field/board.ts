@@ -25,7 +25,6 @@ class Board {
       'div',
       'board__fields',
     );
-    // this.fieldCenter = new Control(this.container.node, 'div', 'board__center');
     this.fieldCenter = new CenterItem(this.container.node, this.gameInfo);
     this.render();
   }
@@ -54,9 +53,6 @@ class Board {
     for (let i = 32; i < 41; i += 1) {
       this.drawCells(100, 55, i);
     }
-    // new Control(this.container.node, 'div', 'board__fields');
-    // new Control(this.container.node, 'div', 'board__center');
-    //new Control(this.container.node, 'div', 'board__tokens');
     this.renderTokens();
   }
   renderTokens() {
@@ -64,21 +60,6 @@ class Board {
       (el) => new PlayersToken(this.container.node, el),
     );
   }
-  // renderThrowDicePopup() {
-  //   const container = new Control(this.fieldCenter.node, 'div', 'popup');
-  //   const rollButton = new Control(container.node, 'div', 'popup__roll');
-  //   rollButton.node.onclick = () => {
-  //     const data = {
-  //       event: 'step',
-  //       payload: {
-  //         gameId: this.gameInfo.gameId,
-  //         nickname: this.name,
-  //       },
-  //     };
-  //     ws.send(JSON.stringify(data));
-  //     container.destroy();
-  //   };
-  // }
 }
 
 export default Board;

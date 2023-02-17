@@ -26,10 +26,26 @@ class CenterItem {
 
   renderChat() {
     const input = new Control(this.chatForm.node, 'input', 'chat__input');
+    input.node.setAttribute('name', 'message');
     (input.node as HTMLInputElement).placeholder = 'Start your message..';
     new Control(this.chatForm.node, 'button', 'chat__btn', 'send');
     this.chatForm.node.onsubmit = (e) => {
       e.preventDefault();
+      const formData = new FormData(this.chatForm.node as HTMLFormElement);
+      const message = formData.get('message');
+      if (message) {
+        ws.send(
+          JSON.stringify({
+            event: 'chatMessage',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+              message,
+            },
+          }),
+        );
+        (input.node as HTMLInputElement).value = '';
+      }
     };
   }
 
@@ -45,6 +61,52 @@ class CenterItem {
         },
       };
       ws.send(JSON.stringify(data));
+      container.destroy();
+    };
+  }
+
+  renderBuyPopUp(name: string, price: number) {
+    const container = new Control(this.container.node, 'div', 'popup');
+    const wrapper = new Control(container.node, 'div', 'popup__message');
+    const text = `Do you want to buy ${name} for ${price}$`;
+    new Control(wrapper.node, 'p', 'popup__text', text);
+    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+    const accept = new Control(
+      btns.node,
+      'button',
+      'popup__btn popup__btn_green',
+      'BUY',
+    );
+    const decline = new Control(
+      btns.node,
+      'button',
+      'popup__btn popup__btn_red',
+      'DECLINE',
+    );
+    accept.node.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          event: 'buying',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+            buildName: name,
+          },
+        }),
+      );
+      container.destroy();
+    };
+
+    decline.node.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          event: 'stepend',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+          },
+        }),
+      );
       container.destroy();
     };
   }
