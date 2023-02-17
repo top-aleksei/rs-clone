@@ -90,8 +90,7 @@ class Game {
   }
 
   moveTokens(token: HTMLElement, currentPos: number, nextPos: number) {
-    const commonPosition = 
-      this.gameInfo.players.filter((el) => el.position === nextPos);
+    
     let animationTopId: number;
     let animationBottomId: number;
     let animationRightId: number;
@@ -104,6 +103,9 @@ class Game {
 
     const centreAngle = 645;    
     const duration = 0.1;
+    const commonPosition = 
+      this.gameInfo.players.filter((el) => el.position === nextPos);
+    console.log(this.gameInfo)
 
     function animationTopLine() {
       posTopLine += duration;              
@@ -137,9 +139,18 @@ class Game {
       posRightLine += duration;     
 
       token.style.top = 55 * posRightLine + 'px';   
-      token.style.left = 'auto';   
-      token.style.right = '35px';   
+      token.style.left = 'auto';  
       token.style.bottom = 'auto';
+
+      if(commonPosition.length === 2) {
+        token.style.right = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.right = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.right = '5px';
+      } else {   
+        token.style.right = '35px'; 
+      }
 
       if (posRightLine < nextPos - 10) {
         animationRightId = requestAnimationFrame(animationRightLine);
@@ -158,8 +169,17 @@ class Game {
       
       token.style.left = 'auto';
       token.style.right = 55 * posBottomLine + 'px';
-      token.style.top = 'auto';   
-      token.style.bottom = '35px';
+      token.style.top = 'auto';  
+
+      if(commonPosition.length === 2) {
+        token.style.bottom = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.bottom = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.bottom = '5px';
+      } else {  
+        token.style.bottom = '35px'; 
+      }
 
       if (posBottomLine < nextPos - 20) {
         animationBottomId = requestAnimationFrame(animationBottomLine);
@@ -177,16 +197,36 @@ class Game {
       posLeftLine += duration;
       
       token.style.top = 'auto';
-      token.style.left = '35px';
       token.style.right = 'auto';      
-      token.style.bottom = 55 * posLeftLine + 'px';  
-      if (posLeftLine < nextPos - 30) {
-        animationLeftId = requestAnimationFrame(animationLeftLine);
+      token.style.bottom = 55 * posLeftLine + 'px';
+      if(commonPosition.length === 2) {
+        token.style.left = '55px';
+      } else if (commonPosition.length === 3) {
+        token.style.left = '15px';
+      } else if (commonPosition.length === 4) {
+        token.style.left = '5px';
+      } else {        
+        token.style.left = '35px'; 
       }
+      if (nextPos > 30 && nextPos <= 40) {
+        if (posLeftLine < nextPos - 30) {
+          animationLeftId = requestAnimationFrame(animationLeftLine);
+        }
+      } else if (nextPos < 10) {
+        if (posLeftLine < 41) {
+          animationLeftId = requestAnimationFrame(animationLeftLine);
+        } else {
+          cancelAnimationFrame(animationLeftId);
+          posTopLine = 1;
+          animationTopId = requestAnimationFrame(animationTopLine);
+        }
+      }
+      
       
       let posTokenBottom = parseInt(token.style.bottom);  
       if(posTokenBottom > 620) {
         cancelAnimationFrame(animationLeftId);
+        posTopLine = 1;
         animationTopId = requestAnimationFrame(animationTopLine);
       }
     }
