@@ -533,9 +533,31 @@ function broadcast(req) {
             res.payload.buildName = req.payload.buildName;
             res.payload.buildCost = req.payload.buildCost;
           }
-          if (games[req.payload.gameId].type === 'buying') {
+          /* if (games[req.payload.gameId].type === 'buying') {
             res.payload.byuing = req.payload.buildName;
-          }
+          }*/
+        }
+        break;
+
+      case 'buying':
+        {
+          res = {
+            event: 'stepping',
+            payload: {
+              gameId: req.payload.gameId,
+              activePlayer: games[req.payload.gameId].activePlayer,
+              type: games[req.payload.gameId].type,
+              buying: req.payload.buildName,
+              players: games[req.payload.gameId].players.map((player) => {
+                return {
+                  nickname: player.nickname,
+                  position: player.position,
+                  color: player.color,
+                  money: player.money,
+                };
+              }),
+            },
+          };
         }
         break;
 
