@@ -13,6 +13,8 @@ class Entrance {
     this.container = new Control(parent, 'div', 'entrance');
     this.bg = new Control(this.container.node, 'div', 'entrance__bg');
     this.btns = new Control(this.bg.node, 'div', 'entrance__frame');
+    window.addEventListener('resize', this.resizeEntrance.bind(this));
+    this.resizeEntrance();
   }
 
   render() {
@@ -47,7 +49,11 @@ class Entrance {
           this.showRegistrate();
         }
       }
-    });
+    });    
+    
+    this.resizeEntrance();
+    window.addEventListener('resize', this.resizeEntrance);
+    
   }
 
   showLogIn() {
@@ -64,6 +70,21 @@ class Entrance {
       this.showLogIn.bind(this),
     );
     reg.render();
+  }
+
+  resizeEntrance () {
+    console.log(this.btns.node)
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const maxWidthBoard = 747;
+    const maxHeigthBoard = 747;
+    const scaleValue = Math.min(
+      window.innerWidth / maxWidthBoard,
+      window.innerHeight / maxHeigthBoard
+    );
+
+    this.container.node.style.transform = `scale(${scaleValue})`;    
+    //this.btns.node.style.transform = `scale(${scaleValue})`;    
   }
 }
 

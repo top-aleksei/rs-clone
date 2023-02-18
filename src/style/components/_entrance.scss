@@ -2,12 +2,16 @@
   display: flex;
   align-items: center;
   min-height: 100vh;
+  max-height: 747px;
+  max-width: 747px;
   &__container {
     padding: 50px;
   }
   &__bg {
     margin: 0 auto;
     background: url('./assets/img/indexField.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     width: 747px;
     height: 747px;
   }

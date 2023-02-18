@@ -27,6 +27,7 @@ class Board {
     );
     this.fieldCenter = new CenterItem(this.container.node, this.gameInfo);
     this.render();
+    this.changeWindowSize();
   }
 
   drawCells(widthCell: number, heightCell: number, id: number) {
@@ -61,20 +62,11 @@ class Board {
     );
   }
 
-  moveTokens(token: HTMLElement, /*infoData: GameInfo,*/ currentPos: number, nextPos: number) {
+  moveTokens(token: HTMLElement, currentPos: number, nextPos: number) {
     let animationTopId: number;
     let animationBottomId: number;
     let animationRightId: number;
     let animationLeftId: number;
-
-    // const currentPos =
-    //     this.gameInfo.players.find(
-    //       (el) => el.nickname === this.gameInfo.activePlayer,
-    //     )?.position || 1;
-
-    // const nextPos =
-    //   infoData.players.find((el) => el.nickname === infoData.activePlayer)
-    //     ?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
@@ -226,6 +218,25 @@ class Board {
       posLeftLine = currentPos - 30;
       animationLeftId = requestAnimationFrame(animationLeftLine);
     }
+  }
+
+  changeWindowSize () {
+    this.resizeBoard();
+    window.addEventListener('resize', this.resizeBoard);
+  }
+
+  resizeBoard () {
+    const area = document.querySelector('.table');
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const maxWidthBoard = 1055;
+    const maxHeigthBoard = 753;
+    const scaleValue = Math.min(
+      window.innerWidth / maxWidthBoard,
+      window.innerHeight / maxHeigthBoard
+    );
+
+    (<HTMLElement>area).style.transform = `scale(${scaleValue})`;    
   }
 }
 

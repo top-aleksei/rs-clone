@@ -10,15 +10,17 @@ import Players from './players';
 class Game {
   container: Control;
   table: Control;
+  wrapperTable: Control;
   board: Board;
   players: Players;
   gameInfo: GameInfo;
   name: string;
 
   constructor(parent: HTMLElement, gameInfo: GameInfo) {
-    this.name = getNameLS() || '';
+    this.name = getNameLS() || '';    
     this.container = new Control(parent, 'div', 'game');
-    this.table = new Control(parent, 'div', 'table');
+    this.wrapperTable = new Control(parent, 'div', 'wrapper');
+    this.table = new Control(this.wrapperTable.node, 'div', 'table');
     this.gameInfo = gameInfo;
     this.players = new Players(this.table.node, this.gameInfo);
     this.board = new Board(this.table.node, this.gameInfo);
@@ -120,6 +122,7 @@ class Game {
       }
     });
   }
+
 }
 
 export default Game;
