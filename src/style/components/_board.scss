@@ -1,14 +1,21 @@
+.wrapper {
+  min-width: 100%;
+  min-height: 100vh;
+  background-color: #262c2f;
+}
 .table {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #262c2f;
-  min-height: 100vh;
-  gap: 40px;
+  height: 100vh;
+  gap: 30px;
 
   .board {
+    min-width: 695px;
+    min-height: 695px;
     width: 695px;
     height: 695px;
+    max-height: 100vh;
     position: relative;
     background-color: white;
 

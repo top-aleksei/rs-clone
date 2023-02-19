@@ -11,7 +11,6 @@ import PlayersToken from './token';
 class Board {
   container: Control;
   fieldContainer: Control;
-  // fieldCenter: Control;
   fieldCenter: CenterItem;
   gameInfo: GameInfo;
   name: string;
@@ -27,6 +26,7 @@ class Board {
     );
     this.fieldCenter = new CenterItem(this.container.node, this.gameInfo);
     this.render();
+    this.changeWindowSize();
   }
 
   drawCells(widthCell: number, heightCell: number, id: number) {
@@ -66,21 +66,19 @@ class Board {
     let animationBottomId: number;
     let animationRightId: number;
     let animationLeftId: number;
-    console.log(infoData);
     const token = document.getElementById(
       `token-${infoData.activePlayer}`,
     ) as HTMLElement;
 
-    const currentPos =
-      this.gameInfo.players.find((el) => el.nickname === infoData.activePlayer)
-        ?.position || 1;
+    const currentPos = this.gameInfo.players.find(
+      (el) => el.nickname === infoData.activePlayer,
+    )?.position || 1;
 
     this.gameInfo = infoData;
 
-    const nextPos =
-      this.gameInfo.players.find(
-        (el) => el.nickname === this.gameInfo.activePlayer,
-      )?.position || 1;
+    const nextPos = this.gameInfo.players.find(
+      (el) => el.nickname === this.gameInfo.activePlayer,
+    )?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
@@ -98,7 +96,7 @@ class Board {
 
       token.style.bottom = 'auto';
       token.style.right = 'auto';
-      token.style.left = 55 * posTopLine + 'px';
+      token.style.left = `${55 * posTopLine}px`;
       if (commonPosition.length === 2) {
         token.style.top = '55px';
       } else if (commonPosition.length === 3) {
@@ -113,7 +111,7 @@ class Board {
         animationTopId = requestAnimationFrame(animationTopLine);
       }
 
-      let posTokenLeft = parseInt(token.style.left);
+      const posTokenLeft = parseInt(token.style.left);
       if (posTokenLeft > centreAngle) {
         cancelAnimationFrame(animationTopId);
         animationRightId = requestAnimationFrame(animationRightLine);
@@ -123,7 +121,7 @@ class Board {
     function animationRightLine() {
       posRightLine += duration;
 
-      token.style.top = 55 * posRightLine + 'px';
+      token.style.top = `${55 * posRightLine}px`;
       token.style.left = 'auto';
       token.style.bottom = 'auto';
 
@@ -141,7 +139,7 @@ class Board {
         animationRightId = requestAnimationFrame(animationRightLine);
       }
 
-      let posTokenTop = parseInt(token.style.top);
+      const posTokenTop = parseInt(token.style.top);
       if (posTokenTop > centreAngle) {
         cancelAnimationFrame(animationRightId);
         animationBottomId = requestAnimationFrame(animationBottomLine);
@@ -152,7 +150,7 @@ class Board {
       posBottomLine += duration;
 
       token.style.left = 'auto';
-      token.style.right = 55 * posBottomLine + 'px';
+      token.style.right = `${55 * posBottomLine}px`;
       token.style.top = 'auto';
 
       if (commonPosition.length === 2) {
@@ -169,7 +167,7 @@ class Board {
         animationBottomId = requestAnimationFrame(animationBottomLine);
       }
 
-      let posTokenRight = parseInt(token.style.right);
+      const posTokenRight = parseInt(token.style.right);
       if (posTokenRight > centreAngle) {
         cancelAnimationFrame(animationBottomId);
         animationLeftId = requestAnimationFrame(animationLeftLine);
@@ -181,7 +179,7 @@ class Board {
 
       token.style.top = 'auto';
       token.style.right = 'auto';
-      token.style.bottom = 55 * posLeftLine + 'px';
+      token.style.bottom = `${55 * posLeftLine}px`;
       if (commonPosition.length === 2) {
         token.style.left = '55px';
       } else if (commonPosition.length === 3) {
@@ -205,7 +203,7 @@ class Board {
         }
       }
 
-      let posTokenBottom = parseInt(token.style.bottom);
+      const posTokenBottom = parseInt(token.style.bottom);
       if (posTokenBottom > 620) {
         cancelAnimationFrame(animationLeftId);
         posTopLine = 1;
@@ -228,6 +226,23 @@ class Board {
       posLeftLine = currentPos - 30;
       animationLeftId = requestAnimationFrame(animationLeftLine);
     }
+  }
+
+  changeWindowSize () {
+    this.resizeBoard();
+    window.addEventListener('resize', this.resizeBoard);
+  }
+
+  resizeBoard () {
+    const area = document.querySelector('.table');
+    const maxWidthBoard = 1055;
+    const maxHeigthBoard = 753;
+    const scaleValue = Math.min(
+      window.innerWidth / maxWidthBoard,
+      window.innerHeight / maxHeigthBoard
+    );
+
+    (<HTMLElement>area).style.transform = `scale(${scaleValue})`;
   }
 }
 
