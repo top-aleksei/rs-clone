@@ -73,7 +73,9 @@ class Entrance {
   }
 
   resizeEntrance () {
-    console.log(this.btns.node)
+    const entranceContainer = document.querySelector('.entrance');
+    const entranceFrameContainer = document.querySelector('.entrance__frame');
+    const entranceSignContainer = document.querySelector('.entrance__sign');
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
     const maxWidthBoard = 747;
@@ -83,8 +85,7 @@ class Entrance {
       window.innerHeight / maxHeigthBoard
     );
 
-    this.container.node.style.transform = `scale(${scaleValue})`;    
-    //this.btns.node.style.transform = `scale(${scaleValue})`;    
+    (<HTMLElement>entranceContainer).style.transform = `scale(${scaleValue})`;    
   }
 }
 

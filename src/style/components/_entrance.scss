@@ -1,19 +1,23 @@
 .entrance {
   display: flex;
   align-items: center;
-  min-height: 100vh;
-  max-height: 747px;
+  justify-content: center;
   max-width: 747px;
+  height: 100vh;
+  margin: 0 auto;
   &__container {
-    padding: 50px;
+    padding: 50px 20px;
+    
   }
   &__bg {
     margin: 0 auto;
     background: url('./assets/img/indexField.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
-    width: 747px;
+    min-width: 747px;
+    min-height: 747px;
     height: 747px;
+    max-height: 100vh;
   }
   &__sign {
     position: absolute;
