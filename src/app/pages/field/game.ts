@@ -1,5 +1,4 @@
 import { allCells } from './cellsInfo';
-// import { Player } from './../../types/game';
 import Control from '../../../common/common';
 import {
   createBuyMessage,
@@ -8,7 +7,7 @@ import {
 } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { GameInfo } from '../../types/game';
+import { Colors, GameInfo } from '../../types/game';
 import Board from './board';
 import Players from './players';
 
@@ -54,7 +53,11 @@ class Game {
         };
 
         // Throwing dices in next and abilitytobuy types
-        if (data.type === 'next' || data.type === 'abilityToByu') {
+        if (
+          data.type === 'next' ||
+          data.type === 'abilityToByu' ||
+          data.type === 'payingTax'
+        ) {
           this.throwDicesAndMove(data);
         }
 
@@ -62,10 +65,37 @@ class Game {
         if (data.type === 'abilityToByu' && this.isActive()) {
           const name = data.buildName;
           const cost = data.buildCost;
-          this.board.fieldCenter.renderBuyPopUp(name, cost);
+          const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+          setTimeout(() => {
+            this.board.fieldCenter.renderBuyPopUp(name, cost);
+          }, delay);
         }
         if (data.type === 'buying') {
           this.buyFactory(data);
+        }
+        if (data.type === 'payingTax' && this.isActive()) {
+          if (data.activePlayer !== data.ownerName) {
+            const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+            setTimeout(() => {
+              this.board.fieldCenter.renderPayPopUp(
+                data,
+                this.players.rerenderMoney.bind(this.players, data.players),
+              );
+            }, delay);
+          } else {
+            console.log(data.activePlayer, ' stepped on his cell');
+            setTimeout(() => {
+              ws.send(
+                JSON.stringify({
+                  event: 'stepend',
+                  payload: {
+                    gameId: this.gameInfo.gameId,
+                    nickname: this.name,
+                  },
+                }),
+              );
+            }, 3000);
+          }
         }
 
         // temp (add temp second condition)
@@ -112,23 +142,21 @@ class Game {
     this.board.fieldCenter.addMessage(messageHTML);
     setTimeout(() => {
       this.board.moveTokens(this.gameInfo);
-    }, 2000);
+    }, 1200);
   }
 
   buyFactory(data: any) {
-    console.log(data);
     const color = this.getActiveColor();
     const message = createBuyMessage(color, data.activePlayer, data.buying);
     this.board.fieldCenter.addMessage(message);
 
     const id = allCells.find((el) => el.name === data.buying)?.id;
-    console.log(id);
 
     const elem = document.getElementById(String(id));
     if (elem) {
-      elem.style.backgroundColor = color;
-      elem.style.opacity = '0.5';
+      elem.style.backgroundColor = Colors[color as keyof typeof Colors];
     }
+    this.players.rerenderMoney(data.players);
 
     if (this.isActive()) {
       ws.send(
