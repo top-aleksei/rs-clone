@@ -11,7 +11,6 @@ import PlayersToken from './token';
 class Board {
   container: Control;
   fieldContainer: Control;
-  // fieldCenter: Control;
   fieldCenter: CenterItem;
   gameInfo: GameInfo;
   name: string;
@@ -62,31 +61,42 @@ class Board {
     );
   }
 
-  moveTokens(token: HTMLElement, currentPos: number, nextPos: number) {
+  moveTokens(infoData: GameInfo) {
     let animationTopId: number;
     let animationBottomId: number;
     let animationRightId: number;
     let animationLeftId: number;
+    const token = document.getElementById(
+      `token-${infoData.activePlayer}`,
+    ) as HTMLElement;
+
+    const currentPos = this.gameInfo.players.find(
+      (el) => el.nickname === infoData.activePlayer,
+    )?.position || 1;
+
+    this.gameInfo = infoData;
+
+    const nextPos = this.gameInfo.players.find(
+      (el) => el.nickname === this.gameInfo.activePlayer,
+    )?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
     let posBottomLine = 1;
     let posLeftLine = 1;
 
-    
-
     const centreAngle = 645;
     const duration = 0.1;
-    const commonPosition = 
-      this.gameInfo.players.filter((el) => el.position === nextPos);
-    console.log(this.gameInfo)
+    const commonPosition = this.gameInfo.players.filter(
+      (el) => el.position === nextPos,
+    );
 
     function animationTopLine() {
       posTopLine += duration;
 
       token.style.bottom = 'auto';
       token.style.right = 'auto';
-      token.style.left = 55 * posTopLine + 'px';
+      token.style.left = `${55 * posTopLine}px`;
       if (commonPosition.length === 2) {
         token.style.top = '55px';
       } else if (commonPosition.length === 3) {
@@ -101,7 +111,7 @@ class Board {
         animationTopId = requestAnimationFrame(animationTopLine);
       }
 
-      let posTokenLeft = parseInt(token.style.left);
+      const posTokenLeft = parseInt(token.style.left);
       if (posTokenLeft > centreAngle) {
         cancelAnimationFrame(animationTopId);
         animationRightId = requestAnimationFrame(animationRightLine);
@@ -111,25 +121,25 @@ class Board {
     function animationRightLine() {
       posRightLine += duration;
 
-      token.style.top = 55 * posRightLine + 'px';   
-      token.style.left = 'auto';  
+      token.style.top = `${55 * posRightLine}px`;
+      token.style.left = 'auto';
       token.style.bottom = 'auto';
 
-      if(commonPosition.length === 2) {
+      if (commonPosition.length === 2) {
         token.style.right = '55px';
       } else if (commonPosition.length === 3) {
         token.style.right = '15px';
       } else if (commonPosition.length === 4) {
         token.style.right = '5px';
-      } else {   
-        token.style.right = '35px'; 
+      } else {
+        token.style.right = '35px';
       }
 
       if (posRightLine < nextPos - 10) {
         animationRightId = requestAnimationFrame(animationRightLine);
       }
 
-      let posTokenTop = parseInt(token.style.top);
+      const posTokenTop = parseInt(token.style.top);
       if (posTokenTop > centreAngle) {
         cancelAnimationFrame(animationRightId);
         animationBottomId = requestAnimationFrame(animationBottomLine);
@@ -138,47 +148,46 @@ class Board {
 
     function animationBottomLine() {
       posBottomLine += duration;
-      
-      token.style.left = 'auto';
-      token.style.right = 55 * posBottomLine + 'px';
-      token.style.top = 'auto';  
 
-      if(commonPosition.length === 2) {
+      token.style.left = 'auto';
+      token.style.right = `${55 * posBottomLine}px`;
+      token.style.top = 'auto';
+
+      if (commonPosition.length === 2) {
         token.style.bottom = '55px';
       } else if (commonPosition.length === 3) {
         token.style.bottom = '15px';
       } else if (commonPosition.length === 4) {
         token.style.bottom = '5px';
-      } else {  
-        token.style.bottom = '35px'; 
+      } else {
+        token.style.bottom = '35px';
       }
 
       if (posBottomLine < nextPos - 20) {
         animationBottomId = requestAnimationFrame(animationBottomLine);
       }
 
-      let posTokenRight = parseInt(token.style.right); 
-      if(posTokenRight > centreAngle) {
+      const posTokenRight = parseInt(token.style.right);
+      if (posTokenRight > centreAngle) {
         cancelAnimationFrame(animationBottomId);
         animationLeftId = requestAnimationFrame(animationLeftLine);
       }
-
     }
-    
+
     function animationLeftLine() {
       posLeftLine += duration;
-      
+
       token.style.top = 'auto';
-      token.style.right = 'auto';      
-      token.style.bottom = 55 * posLeftLine + 'px';
-      if(commonPosition.length === 2) {
+      token.style.right = 'auto';
+      token.style.bottom = `${55 * posLeftLine}px`;
+      if (commonPosition.length === 2) {
         token.style.left = '55px';
       } else if (commonPosition.length === 3) {
         token.style.left = '15px';
       } else if (commonPosition.length === 4) {
         token.style.left = '5px';
-      } else {        
-        token.style.left = '35px'; 
+      } else {
+        token.style.left = '35px';
       }
       if (nextPos > 30 && nextPos <= 40) {
         if (posLeftLine < nextPos - 30) {
@@ -193,10 +202,9 @@ class Board {
           animationTopId = requestAnimationFrame(animationTopLine);
         }
       }
-      
-      
-      let posTokenBottom = parseInt(token.style.bottom);  
-      if(posTokenBottom > 620) {
+
+      const posTokenBottom = parseInt(token.style.bottom);
+      if (posTokenBottom > 620) {
         cancelAnimationFrame(animationLeftId);
         posTopLine = 1;
         animationTopId = requestAnimationFrame(animationTopLine);
@@ -227,8 +235,6 @@ class Board {
 
   resizeBoard () {
     const area = document.querySelector('.table');
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
     const maxWidthBoard = 1055;
     const maxHeigthBoard = 753;
     const scaleValue = Math.min(
@@ -236,7 +242,7 @@ class Board {
       window.innerHeight / maxHeigthBoard
     );
 
-    (<HTMLElement>area).style.transform = `scale(${scaleValue})`;    
+    (<HTMLElement>area).style.transform = `scale(${scaleValue})`;
   }
 }
 

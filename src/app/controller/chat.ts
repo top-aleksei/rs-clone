@@ -25,3 +25,12 @@ export function createChatMessage(
   text.node.style.fontStyle = 'italic';
   return elem.node;
 }
+
+export function createBuyMessage(color: string, name: string, factory: string) {
+  const elem = new Control(null, 'div', 'chat__item');
+  const player = new Control(elem.node, 'span', 'chat__player', name);
+  player.node.style.color = color;
+  const message = ` bought "${factory}"`;
+  new Control(elem.node, 'span', 'chat__message', message);
+  return elem.node;
+}

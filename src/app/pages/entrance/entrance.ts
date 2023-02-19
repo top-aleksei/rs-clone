@@ -13,7 +13,7 @@ class Entrance {
     this.container = new Control(parent, 'div', 'entrance');
     this.bg = new Control(this.container.node, 'div', 'entrance__bg');
     this.btns = new Control(this.bg.node, 'div', 'entrance__frame');
-    window.addEventListener('resize', this.resizeEntrance.bind(this));
+    window.addEventListener('resize', this.resizeEntrance);
     this.resizeEntrance();
   }
 
@@ -49,11 +49,7 @@ class Entrance {
           this.showRegistrate();
         }
       }
-    });    
-    
-    this.resizeEntrance();
-    window.addEventListener('resize', this.resizeEntrance);
-    
+    });
   }
 
   showLogIn() {
@@ -74,18 +70,14 @@ class Entrance {
 
   resizeEntrance () {
     const entranceContainer = document.querySelector('.entrance');
-    const entranceFrameContainer = document.querySelector('.entrance__frame');
-    const entranceSignContainer = document.querySelector('.entrance__sign');
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
     const maxWidthBoard = 747;
     const maxHeigthBoard = 747;
     const scaleValue = Math.min(
       window.innerWidth / maxWidthBoard,
-      window.innerHeight / maxHeigthBoard
+      window.innerHeight / maxHeigthBoard,
     );
 
-    (<HTMLElement>entranceContainer).style.transform = `scale(${scaleValue})`;    
+    (<HTMLElement>entranceContainer).style.transform = `scale(${scaleValue})`;
   }
 }
 
