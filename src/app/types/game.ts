@@ -1,8 +1,10 @@
-// export interface Player {
-//   id: number;
-//   name: string;
-//   bank: number;
-// }
+export interface Player {
+  nickname: string;
+  position: number;
+  color: string;
+  money: number;
+  owner: string[];
+}
 
 export interface Room {
   gameId: number;
@@ -22,4 +24,11 @@ export interface PlayerInGame {
   nickname: string;
   position: number;
   color: string;
+}
+
+export enum Colors {
+  green = 'rgba(21, 140, 20, 0.2)',
+  red = 'rgba(252, 7, 7, 0.2)',
+  blue = 'rgba(12, 12, 243, 0.2)',
+  yellow = 'rgba(248, 248, 10, 0.2)',
 }

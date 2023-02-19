@@ -1,5 +1,5 @@
 import Control from '../../../common/common';
-import { GameInfo } from '../../types/game';
+import { GameInfo, Player } from '../../types/game';
 import PlayersCard from './player-card';
 
 class Players {
@@ -20,8 +20,6 @@ class Players {
   }
 
   showCurrentPlayer(activePlayer: string) {
-    // console.log(this);
-    // console.log(this.gameInfo);
     const players = this.container.node.children;
     [...players].forEach((el) => {
       if (el.id === `card-${activePlayer}`) {
@@ -29,6 +27,16 @@ class Players {
       } else {
         el.classList.remove('players-card_active');
       }
+    });
+  }
+
+  rerenderMoney(players: Player[]) {
+    const playersDOM = this.container.node.children;
+    players.forEach((player) => {
+      const curPlayer = [...playersDOM].find(
+        (el) => el.id === `card-${player.nickname}`,
+      ) as HTMLElement;
+      curPlayer.children[1].textContent = `${player.money}$`;
     });
   }
 }

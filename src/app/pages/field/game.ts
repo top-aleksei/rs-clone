@@ -1,9 +1,13 @@
-//import { Player } from './../../types/game';
+import { allCells } from './cellsInfo';
 import Control from '../../../common/common';
-import { createChatMessage, createMessageThrow } from '../../controller/chat';
+import {
+  createBuyMessage,
+  createChatMessage,
+  createMessageThrow,
+} from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { GameInfo } from '../../types/game';
+import { Colors, GameInfo } from '../../types/game';
 import Board from './board';
 import Players from './players';
 
@@ -27,82 +31,86 @@ class Game {
   }
 
   activePlayerStartStep() {
-    if (this.name === this.gameInfo.activePlayer) {
+    if (this.isActive()) {
       this.board.fieldCenter.renderThrowDicePopup();
     }
   }
 
+  isActive() {
+    return this.name === this.gameInfo.activePlayer;
+  }
+
   addWsLitener() {
     ws.addEventListener('message', (e) => {
-      // replace
-      const currentPosition =
-        this.gameInfo.players.find(
-          (el) => el.nickname === this.gameInfo.activePlayer,
-        )?.position || 1;
-      // replace
-
       const res = JSON.parse(e.data);
       if (res.event === 'stepping') {
         const data = res.payload;
-        const info: GameInfo = {
+        this.gameInfo = {
           gameId: data.gameId,
           activePlayer: data.activePlayer,
           type: data.type,
           players: data.players,
         };
 
-        this.gameInfo = info;
-
-        const color =
-          info.players.find((el) => el.nickname === info.activePlayer)?.color ||
-          'white';
-        const nextPosition =
-          info.players.find((el) => el.nickname === info.activePlayer)
-            ?.position || 1;
-        
-        const activeToken = document.getElementById(
-          `token-${this.gameInfo.activePlayer}`,
-        );
-        if (data.type !== 'buying') {
-          const dice = [data.boneOne, data.boneTwo];
-          this.board.fieldCenter.rollDiceAnimation(dice);
-          const messageHTML = createMessageThrow(
-            color,
-            info.activePlayer,
-            dice,
-          );
-          this.board.fieldCenter.addMessage(messageHTML);
-        }
-        // TEMP. REPLACE. BUY
+        // Throwing dices in next and abilitytobuy types
         if (
-          data.type === 'abilityToByu' &&
-          this.name === this.gameInfo.activePlayer
+          data.type === 'next' ||
+          data.type === 'abilityToByu' ||
+          data.type === 'payingTax'
         ) {
+          this.throwDicesAndMove(data);
+        }
+
+        // render Buy popup
+        if (data.type === 'abilityToByu' && this.isActive()) {
           const name = data.buildName;
           const cost = data.buildCost;
-          this.board.fieldCenter.renderBuyPopUp(name, cost);
+          const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+          setTimeout(() => {
+            this.board.fieldCenter.renderBuyPopUp(name, cost);
+          }, delay);
         }
-        // TEMP. REPLACE. BUY
-
-        setTimeout(() => {
-          this.board.moveTokens(
-            <HTMLElement>activeToken,
-            currentPosition, 
-            nextPosition
-          );
-        }, 2000);
+        if (data.type === 'buying') {
+          this.buyFactory(data);
+        }
+        if (data.type === 'payingTax' && this.isActive()) {
+          if (data.activePlayer !== data.ownerName) {
+            const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+            setTimeout(() => {
+              this.board.fieldCenter.renderPayPopUp(
+                data,
+                this.players.rerenderMoney.bind(this.players, data.players),
+              );
+            }, delay);
+          } else {
+            console.log(data.activePlayer, ' stepped on his cell');
+            setTimeout(() => {
+              ws.send(
+                JSON.stringify({
+                  event: 'stepend',
+                  payload: {
+                    gameId: this.gameInfo.gameId,
+                    nickname: this.name,
+                  },
+                }),
+              );
+            }, 3000);
+          }
+        }
 
         // temp (add temp second condition)
-        if (this.name === this.gameInfo.activePlayer && data.type === 'next') {
-          ws.send(
-            JSON.stringify({
-              event: 'stepend',
-              payload: {
-                gameId: this.gameInfo.gameId,
-                nickname: this.name,
-              },
-            }),
-          );
+        if (this.isActive() && data.type === 'next') {
+          setTimeout(() => {
+            ws.send(
+              JSON.stringify({
+                event: 'stepend',
+                payload: {
+                  gameId: this.gameInfo.gameId,
+                  nickname: this.name,
+                },
+              }),
+            );
+          }, 3000);
         }
         // temp
       } else if (res.event === 'startStep') {
@@ -119,6 +127,55 @@ class Game {
         this.board.fieldCenter.addMessage(messageHTML);
       }
     });
+  }
+
+  throwDicesAndMove(data: any) {
+    const color = this.getActiveColor();
+
+    const dice = [data.boneOne, data.boneTwo];
+    this.board.fieldCenter.rollDiceAnimation(dice);
+    const messageHTML = createMessageThrow(
+      color,
+      this.gameInfo.activePlayer,
+      dice,
+    );
+    this.board.fieldCenter.addMessage(messageHTML);
+    setTimeout(() => {
+      this.board.moveTokens(this.gameInfo);
+    }, 1200);
+  }
+
+  buyFactory(data: any) {
+    const color = this.getActiveColor();
+    const message = createBuyMessage(color, data.activePlayer, data.buying);
+    this.board.fieldCenter.addMessage(message);
+
+    const id = allCells.find((el) => el.name === data.buying)?.id;
+
+    const elem = document.getElementById(String(id));
+    if (elem) {
+      elem.style.backgroundColor = Colors[color as keyof typeof Colors];
+    }
+    this.players.rerenderMoney(data.players);
+
+    if (this.isActive()) {
+      ws.send(
+        JSON.stringify({
+          event: 'stepend',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+          },
+        }),
+      );
+    }
+  }
+  getActiveColor() {
+    return (
+      this.gameInfo.players.find(
+        (el) => el.nickname === this.gameInfo.activePlayer,
+      )?.color || 'white'
+    );
   }
 }
 
