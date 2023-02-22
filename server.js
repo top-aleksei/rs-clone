@@ -12,7 +12,7 @@ const app = express();
 const port = 13500;
 
 const positions = {
-  1: {},
+  1: { type: 'free' },
   2: {
     type: 'build',
     name: 'galanteya',
@@ -21,7 +21,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  3: {},
+  3: { type: 'bonus', sign: 'random' },
   4: {
     type: 'build',
     name: 'makey',
@@ -30,7 +30,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  5: {},
+  5: { type: 'bonus', sign: 'plus' },
   6: {
     type: 'build',
     name: 'belshina',
@@ -47,7 +47,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  8: {},
+  8: { type: 'bonus', sign: 'random' },
   9: {
     type: 'build',
     name: 'markformelle',
@@ -64,7 +64,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  11: {},
+  11: { type: 'bonus', sign: 'minus' },
   12: {
     type: 'build',
     name: 'kommunarka',
@@ -112,7 +112,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  18: {},
+  18: { type: 'bonus', sign: 'random' },
   19: {
     type: 'build',
     name: 'alivarya',
@@ -138,7 +138,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  23: {},
+  23: { type: 'bonus', sign: 'random' },
   24: {
     type: 'build',
     name: 'relodis',
@@ -195,7 +195,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  31: {},
+  31: { type: 'bonus', sign: 'minus' },
   32: {
     type: 'build',
     name: 'shagovita',
@@ -212,7 +212,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  34: {},
+  34: { type: 'bonus', sign: 'random' },
   35: {
     type: 'build',
     name: 'marko',
@@ -229,7 +229,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  37: {},
+  37: { type: 'bonus', sign: 'plus' },
   38: {
     type: 'build',
     name: 'bmz',
@@ -238,7 +238,7 @@ const positions = {
     costSell: 500,
     costParking: 1000,
   },
-  39: {},
+  39: { type: 'bonus', sign: 'random' },
   40: {
     type: 'build',
     name: 'belaruskali',
@@ -541,6 +541,10 @@ function broadcast(req) {
             res.payload.ownerName = req.payload.ownerName;
             res.payload.costParking = req.payload.costParking;
           }
+          if (games[req.payload.gameId].type === 'bonus') {
+            res.payload.bonusSize = req.payload.bonusSize;
+          }
+
           /* if (games[req.payload.gameId].type === 'buying') {
             res.payload.byuing = req.payload.buildName;
           }*/
@@ -763,6 +767,42 @@ function logic(req) {
         games[req.payload.gameId].type = 'payingTax';
         req.payload.ownerName = ownerName;
         req.payload.costParking = build.costParking;
+      }
+      //если позиция бонусная
+      else if (
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].type === 'bonus'
+      ) {
+        games[req.payload.gameId].type = 'bonus';
+        let bonusMinus = Math.round(Math.random());
+        let bonusSize = Math.floor(Math.random() * 10 + 1) * 100;
+        if (
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].sign === 'minus'
+        ) {
+          bonusSize = -bonusSize;
+        } else if (
+          games[req.payload.gameId].positions[
+            games[req.payload.gameId].players[
+              games[req.payload.gameId].activePlayerNumber
+            ].position
+          ].sign !== 'plus' &&
+          bonusMinus
+        ) {
+          bonusSize = -bonusSize;
+        }
+        games[req.payload.gameId].type = 'bonus';
+        req.payload.bonusSize = bonusSize;
+        //добавить бонус игроку
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ].money += bonusSize;
       }
       // остальное
       else {
