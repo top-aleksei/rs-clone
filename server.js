@@ -574,6 +574,30 @@ function broadcast(req) {
         }
         break;
 
+      case 'selling':
+        {
+          res = {
+            event: 'selling',
+            payload: {
+              gameId: req.payload.gameId,
+              activePlayer: games[req.payload.gameId].activePlayer,
+              type: games[req.payload.gameId].type,
+              selling: req.payload.buildName,
+              cost: req.payload.cost,
+              players: games[req.payload.gameId].players.map((player) => {
+                return {
+                  nickname: player.nickname,
+                  position: player.position,
+                  color: player.color,
+                  money: player.money,
+                  owner: player.owner,
+                };
+              }),
+            },
+          };
+        }
+        break;
+
       case 'chatMessage':
         {
           res = {
@@ -834,6 +858,28 @@ function logic(req) {
       }
       games[req.payload.gameId].type = 'buying';
 
+      break;
+
+    case 'selling':
+      //продающееся здание
+      const sellingBuilding = null;
+      for (keys in positions) {
+        if (positions[keys].name === req.payload.buildName) {
+          sellingBuilding = positions[keys].name;
+        }
+      }
+      // продающий игрок
+      let activePlayer =
+        games[req.payload.gameId].players[
+          games[req.payload.gameId].activePlayerNumber
+        ];
+
+      activePlayer.money += sellingBuilding.costSell;
+      activePlayer.owner.delete(sellingBuilding.name);
+      sellingBuilding.owner = null;
+
+      games[req.payload.gameId].type = 'selling';
+      req.payload.cost = sellingBuilding.costSell;
       break;
 
     case 'stepend':
