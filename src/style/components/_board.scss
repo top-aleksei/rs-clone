@@ -28,6 +28,13 @@
       margin: 1px;
       padding: 8px;
       background-color: #262c2f;
+      ::-webkit-scrollbar {
+        background-color: rgba(172, 164, 164, 0.3);
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #141616;
+        border-radius: 5px;
+      }
     }
   }
 }

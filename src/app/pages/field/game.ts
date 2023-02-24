@@ -1,6 +1,7 @@
 import { allCells } from './cellsInfo';
 import Control from '../../../common/common';
 import {
+  createBonusMessage,
   createBuyMessage,
   createChatMessage,
   createMessageThrow,
@@ -58,7 +59,8 @@ class Game {
         if (
           data.type === 'next' ||
           data.type === 'abilityToByu' ||
-          data.type === 'payingTax'
+          data.type === 'payingTax' ||
+          data.type === 'bonus'
         ) {
           this.throwDicesAndMove(data);
         }
@@ -67,7 +69,7 @@ class Game {
         if (data.type === 'abilityToByu' && this.isActive()) {
           const name = data.buildName;
           const cost = data.buildCost;
-          const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+          const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
           setTimeout(() => {
             this.board.fieldCenter.renderBuyPopUp(name, cost);
           }, delay);
@@ -75,9 +77,12 @@ class Game {
         if (data.type === 'buying') {
           this.buyFactory(data);
         }
+        if (data.type === 'bonus') {
+          this.stepOnBonus(data);
+        }
         if (data.type === 'payingTax' && this.isActive()) {
           if (data.activePlayer !== data.ownerName) {
-            const delay = (data.boneOne + data.boneTwo) * 100 + 2000;
+            const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
             setTimeout(() => {
               this.board.fieldCenter.renderPayPopUp(
                 data,
@@ -85,7 +90,7 @@ class Game {
               );
             }, delay);
           } else {
-            console.log(data.activePlayer, ' stepped on his cell');
+            console.log(data.activePlayer, ' stepped on his cell!');
             setTimeout(() => {
               ws.send(
                 JSON.stringify({
@@ -130,6 +135,35 @@ class Game {
       }
     });
   }
+
+  stepOnBonus(data: any) {
+    const color = this.getActiveColor();
+    const messageHTML = createBonusMessage(
+      color,
+      this.gameInfo.activePlayer,
+      data.bonusSize,
+    );
+
+    setTimeout(() => {
+      this.board.fieldCenter.addMessage(messageHTML);
+      this.players.rerenderMoney(data.players);
+    }, 2500);
+
+    if (this.isActive()) {
+      setTimeout(() => {
+        ws.send(
+          JSON.stringify({
+            event: 'stepend',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+            },
+          }),
+        );
+      }, 3000);
+    }
+  }
+
   throwDicesAndMove(data: any) {
     const color = this.getActiveColor();
 
@@ -140,9 +174,9 @@ class Game {
       this.gameInfo.activePlayer,
       dice,
     );
-    this.board.fieldCenter.addMessage(messageHTML);
     setTimeout(() => {
       this.board.moveTokens(this.gameInfo);
+      this.board.fieldCenter.addMessage(messageHTML);
     }, 1200);
   }
 
