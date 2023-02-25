@@ -4,250 +4,14 @@ const Websocket = require('ws');
 const cors = require('cors');
 const morgan = require('morgan');
 
+const positions = require('./positions.js');
+
 const games = {};
 const players = new Set();
 const colors = ['red', 'green', 'blue', 'yellow'];
 
 const app = express();
 const port = 13500;
-
-const positions = {
-  1: { type: 'free' },
-  2: {
-    type: 'build',
-    name: 'galanteya',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  3: { type: 'bonus', sign: 'random' },
-  4: {
-    type: 'build',
-    name: 'makey',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  5: { type: 'bonus', sign: 'plus' },
-  6: {
-    type: 'build',
-    name: 'belshina',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  7: {
-    type: 'build',
-    name: 'milavitsa',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  8: { type: 'bonus', sign: 'random' },
-  9: {
-    type: 'build',
-    name: 'markformelle',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  10: {
-    type: 'build',
-    name: 'svitanak',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  11: { type: 'bonus', sign: 'minus' },
-  12: {
-    type: 'build',
-    name: 'kommunarka',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  13: {
-    type: 'build',
-    name: 'horizont',
-    owner: null,
-    costBuy: 1000,
-    costSell: 500,
-  },
-  14: {
-    type: 'build',
-    name: 'spartak',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  15: {
-    type: 'build',
-    name: 'readeater',
-    owner: null,
-    costBuy: 1000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  16: {
-    type: 'build',
-    name: 'maz',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  17: {
-    type: 'build',
-    name: 'lidskaye',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  18: { type: 'bonus', sign: 'random' },
-  19: {
-    type: 'build',
-    name: 'alivarya',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  20: {
-    type: 'build',
-    name: 'kristall',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  21: {},
-  22: {
-    type: 'build',
-    name: 'belita',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  23: { type: 'bonus', sign: 'random' },
-  24: {
-    type: 'build',
-    name: 'relodis',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  25: {
-    type: 'build',
-    name: 'luxvisage',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  26: {
-    type: 'build',
-    name: 'belaz',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  27: {
-    type: 'build',
-    name: 'aist',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  28: {
-    type: 'build',
-    name: 'krakken',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  29: {
-    type: 'build',
-    name: 'atlant',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  30: {
-    type: 'build',
-    name: 'minsk',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  31: { type: 'bonus', sign: 'minus' },
-  32: {
-    type: 'build',
-    name: 'shagovita',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  33: {
-    type: 'build',
-    name: 'belwest',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  34: { type: 'bonus', sign: 'random' },
-  35: {
-    type: 'build',
-    name: 'marko',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  36: {
-    type: 'build',
-    name: 'belarus',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  37: { type: 'bonus', sign: 'plus' },
-  38: {
-    type: 'build',
-    name: 'bmz',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-  39: { type: 'bonus', sign: 'random' },
-  40: {
-    type: 'build',
-    name: 'belaruskali',
-    owner: null,
-    costBuy: 2000,
-    costSell: 500,
-    costParking: 1000,
-  },
-};
 
 app.use(morgan('tiny'));
 app.use(cors());
@@ -536,7 +300,10 @@ function broadcast(req) {
             res.payload.buildName = req.payload.buildName;
             res.payload.buildCost = req.payload.buildCost;
           }
-          if (games[req.payload.gameId].type === 'payingTax') {
+          if (
+            games[req.payload.gameId].type === 'payingTax' ||
+            games[req.payload.gameId].type === 'paidTax'
+          ) {
             res.payload.buildName = req.payload.buildName;
             res.payload.ownerName = req.payload.ownerName;
             res.payload.costParking = req.payload.costParking;
@@ -778,16 +545,18 @@ function logic(req) {
             ].position
           ];
 
-        games[req.payload.gameId].players = games[
+        //заплатить автоматически - команда сказала убрать
+        /*  games[req.payload.gameId].players = games[
           req.payload.gameId
         ].players.map((player) => {
           if (player.nickname === nickname) {
             player.money -= build.costParking;
           } else if (player.nickname === ownerName) {
-            player.money -= build.costParking;
+            player.money += build.costParking;
           }
           return player;
         });
+        */
         games[req.payload.gameId].type = 'payingTax';
         req.payload.ownerName = ownerName;
         req.payload.costParking = build.costParking;
@@ -881,6 +650,40 @@ function logic(req) {
       games[req.payload.gameId].type = 'selling';
       req.payload.cost = sellingBuilding.costSell;
       break;
+
+    case 'paying': {
+      const ownerName =
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ].owner;
+
+      const nickname = req.payload.nickname;
+
+      const build =
+        games[req.payload.gameId].positions[
+          games[req.payload.gameId].players[
+            games[req.payload.gameId].activePlayerNumber
+          ].position
+        ];
+
+      //оплата
+      games[req.payload.gameId].players = games[req.payload.gameId].players.map(
+        (player) => {
+          if (player.nickname === nickname) {
+            player.money -= build.costParking;
+          } else if (player.nickname === ownerName) {
+            player.money += build.costParking;
+          }
+          return player;
+        }
+      );
+
+      games[req.payload.gameId].type = 'paidTax';
+      req.payload.ownerName = ownerName;
+      req.payload.costParking = build.costParking;
+    }
 
     case 'stepend':
       if (req.payload.nickname === games[req.payload.gameId].activePlayer) {
