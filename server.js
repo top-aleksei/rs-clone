@@ -462,6 +462,7 @@ function logic(req) {
   const game = games[gameId];
   const currentPlayerNumber = game.activePlayerNumber;
   const currentPlayer = game.players[currentPlayerNumber];
+  const currentPosition = game.positions[currentPlayer.position];
 
   switch (req.event) {
     case 'step':
@@ -474,41 +475,36 @@ function logic(req) {
 
       // если позиция на здании и свободна
       if (
-        game.positions[currentPlayer.position].hasOwnProperty('owner') &&
-        game.positions[currentPlayer.position].owner === null
+        currentPosition.hasOwnProperty('owner') &&
+        currentPosition.owner === null
       ) {
         game.type = 'abilityToByu';
-        req.payload.buildName = game.positions[currentPlayer.position].name;
-        req.payload.buildCost = game.positions[currentPlayer.position].costBuy;
+        req.payload.buildName = currentPosition.name;
+        req.payload.buildCost = currentPosition.costBuy;
       }
 
       //если позиция на здании и не свободна
       else if (
-        game.positions[currentPlayer.position].hasOwnProperty('owner') &&
-        game.positions[currentPlayer.position].owner !== null
+        currentPosition.hasOwnProperty('owner') &&
+        currentPosition.owner !== null
       ) {
-        const ownerName = game.positions[currentPlayer.position].owner;
+        const ownerName = currentPosition.owner;
 
         const nickname = req.payload.nickname;
 
-        const build = game.positions[currentPlayer.position];
-
         game.type = 'payingTax';
         req.payload.ownerName = ownerName;
-        req.payload.costParking = build.costParking;
+        req.payload.costParking = currentPosition.costParking;
       }
 
       //если позиция бонусная
-      else if (game.positions[currentPlayer.position].type === 'bonus') {
+      else if (currentPosition.type === 'bonus') {
         game.type = 'bonus';
         let bonusMinus = Math.round(Math.random());
         let bonusSize = Math.floor(Math.random() * 10 + 1) * 100;
-        if (game.positions[currentPlayer.position].sign === 'minus') {
+        if (currentPosition.sign === 'minus') {
           bonusSize = -bonusSize;
-        } else if (
-          game.positions[currentPlayer.position].sign !== 'plus' &&
-          bonusMinus
-        ) {
+        } else if (currentPosition.sign !== 'plus' && bonusMinus) {
           bonusSize = -bonusSize;
         }
         game.type = 'bonus';
@@ -524,9 +520,8 @@ function logic(req) {
 
     case 'buying':
       if (req.payload.nickname === game.activePlayer) {
-        currentPlayer.money =
-          currentPlayer.money - game.positions[currentPlayer.position].costBuy;
-        game.positions[currentPlayer.position].owner = game.activePlayer;
+        currentPlayer.money = currentPlayer.money - currentPosition.costBuy;
+        currentPosition.owner = game.activePlayer;
         currentPlayer.owner.push(req.payload.buildName);
       }
       game.type = 'buying';
@@ -550,25 +545,23 @@ function logic(req) {
       break;
 
     case 'paying': {
-      const ownerName = game.positions[currentPlayer.position].owner;
+      const ownerName = currentPosition.owner;
 
       const nickname = req.payload.nickname;
-
-      const build = game.positions[currentPlayer.position];
 
       //оплата
       game.players = game.players.map((player) => {
         if (player.nickname === nickname) {
-          player.money -= build.costParking;
+          player.money -= currentPosition.costParking;
         } else if (player.nickname === ownerName) {
-          player.money += build.costParking;
+          player.money += currentPosition.costParking;
         }
         return player;
       });
 
       game.type = 'paidTax';
       req.payload.ownerName = ownerName;
-      req.payload.costParking = build.costParking;
+      req.payload.costParking = currentPosition.costParking;
     }
 
     case 'stepend':
