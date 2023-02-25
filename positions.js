@@ -64,8 +64,9 @@ const positions = {
     type: 'build',
     name: 'horizont',
     owner: null,
-    costBuy: 1000,
+    costBuy: 2000,
     costSell: 500,
+    costParking: 1000,
   },
   14: {
     type: 'build',

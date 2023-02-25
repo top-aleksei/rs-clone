@@ -95,11 +95,9 @@ function initGames(ws, req) {
   if (req.event === 'create') {
     if (!games[req.payload.gameId]) {
       games[req.payload.gameId] = {};
-      //games[req.gameId].canPlay = false;
       games[req.payload.gameId].gameId = req.payload.gameId;
       games[req.payload.gameId].players = [ws];
       games[req.payload.gameId].nicknames = req.payload.nicknames;
-      //games[gameId].activePlayer = null;
       games[req.payload.gameId].qty = req.payload.qty;
       ws.nickname = req.payload.nicknames[0];
       ws.gameId = req.payload.gameId;
@@ -425,37 +423,7 @@ function broadcast(req) {
         }
 
         break;
-      case 'end':
-        if (req.payload.id === games[gameId].whoGo) {
-          games[gameId].action = 'startGo';
-          games[gameId].activePlayer += 1;
-          games[gameId].activePlayer =
-            games[gameId].activePlayer === games[gameId].players.length
-              ? 0
-              : games[gameId].activePlayer;
-          games[gameId].whoGo =
-            games[gameId].players[games[gameId].activePlayer].id;
-          res = {
-            event: 'going',
-            payload: {
-              gameId: gameId,
-              success: true,
-              players: games[gameId].players.map((client) => {
-                return {
-                  playerId: client.id,
-                  playerName: client.nickname,
-                  playerPosition: client.position,
-                  playerMoney: client.money,
-                  playerOwner: client.owner,
-                };
-              }),
-              canPlay: games[gameId].canPlay,
-              whoGo: games[gameId].whoGo,
-              action: games[gameId].action,
-            },
-          };
-        }
-        break;*/
+*/
       default:
         res = {
           event: 'unknown',
@@ -468,164 +436,101 @@ function broadcast(req) {
 }
 
 function logic(req) {
+  const gameId = req.payload.gameId;
+  const game = games[gameId];
+
   switch (req.event) {
     case 'step':
       req.payload.boneOne = Math.floor(Math.random() * 6) + 1;
       req.payload.boneTwo = Math.floor(Math.random() * 6) + 1;
-      games[req.payload.gameId].players[
-        games[req.payload.gameId].activePlayerNumber
-      ].position =
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].position +
+
+      game.players[game.activePlayerNumber].position =
+        game.players[game.activePlayerNumber].position +
         req.payload.boneOne +
         req.payload.boneTwo;
-      if (
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].position > 40
-      )
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].position -= 40;
+      if (game.players[game.activePlayerNumber].position > 40)
+        game.players[game.activePlayerNumber].position -= 40;
 
       // если позиция на здании и свободна
       if (
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
+        game.positions[
+          game.players[game.activePlayerNumber].position
         ].hasOwnProperty('owner') &&
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ].owner === null
+        game.positions[game.players[game.activePlayerNumber].position].owner ===
+          null
       ) {
-        games[req.payload.gameId].type = 'abilityToByu';
+        game.type = 'abilityToByu';
         req.payload.buildName =
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ].name;
+          game.positions[game.players[game.activePlayerNumber].position].name;
         req.payload.buildCost =
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
+          game.positions[
+            game.players[game.activePlayerNumber].position
           ].costBuy;
       }
+
       //если позиция на здании и не свободна
       else if (
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
+        game.positions[
+          game.players[game.activePlayerNumber].position
         ].hasOwnProperty('owner') &&
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ].owner !== null
+        game.positions[game.players[game.activePlayerNumber].position].owner !==
+          null
       ) {
         const ownerName =
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ].owner;
+          game.positions[game.players[game.activePlayerNumber].position].owner;
 
         const nickname = req.payload.nickname;
 
         const build =
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ];
+          game.positions[game.players[game.activePlayerNumber].position];
 
-        //заплатить автоматически - команда сказала убрать
-        /*  games[req.payload.gameId].players = games[
-          req.payload.gameId
-        ].players.map((player) => {
-          if (player.nickname === nickname) {
-            player.money -= build.costParking;
-          } else if (player.nickname === ownerName) {
-            player.money += build.costParking;
-          }
-          return player;
-        });
-        */
-        games[req.payload.gameId].type = 'payingTax';
+        game.type = 'payingTax';
         req.payload.ownerName = ownerName;
         req.payload.costParking = build.costParking;
       }
+
       //если позиция бонусная
       else if (
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ].type === 'bonus'
+        game.positions[game.players[game.activePlayerNumber].position].type ===
+        'bonus'
       ) {
-        games[req.payload.gameId].type = 'bonus';
+        game.type = 'bonus';
         let bonusMinus = Math.round(Math.random());
         let bonusSize = Math.floor(Math.random() * 10 + 1) * 100;
         if (
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ].sign === 'minus'
+          game.positions[game.players[game.activePlayerNumber].position]
+            .sign === 'minus'
         ) {
           bonusSize = -bonusSize;
         } else if (
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ].sign !== 'plus' &&
+          game.positions[game.players[game.activePlayerNumber].position]
+            .sign !== 'plus' &&
           bonusMinus
         ) {
           bonusSize = -bonusSize;
         }
-        games[req.payload.gameId].type = 'bonus';
+        game.type = 'bonus';
         req.payload.bonusSize = bonusSize;
         //добавить бонус игроку
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].money += bonusSize;
+        game.players[game.activePlayerNumber].money += bonusSize;
       }
       // остальное
       else {
-        games[req.payload.gameId].type = 'next';
+        game.type = 'next';
       }
       break;
 
     case 'buying':
-      if (req.payload.nickname === games[req.payload.gameId].activePlayer) {
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].money =
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].money -
-          games[req.payload.gameId].positions[
-            games[req.payload.gameId].players[
-              games[req.payload.gameId].activePlayerNumber
-            ].position
-          ].costBuy;
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ].owner = games[req.payload.gameId].activePlayer;
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ].owner.push(req.payload.buildName);
+      if (req.payload.nickname === game.activePlayer) {
+        game.players[game.activePlayerNumber].money =
+          game.players[game.activePlayerNumber].money -
+          game.positions[game.players[game.activePlayerNumber].position]
+            .costBuy;
+        game.positions[game.players[game.activePlayerNumber].position].owner =
+          game.activePlayer;
+        game.players[game.activePlayerNumber].owner.push(req.payload.buildName);
       }
-      games[req.payload.gameId].type = 'buying';
+      game.type = 'buying';
 
       break;
 
@@ -638,70 +543,51 @@ function logic(req) {
         }
       }
       // продающий игрок
-      let activePlayer =
-        games[req.payload.gameId].players[
-          games[req.payload.gameId].activePlayerNumber
-        ];
-
+      let activePlayer = game.players[game.activePlayerNumber];
       activePlayer.money += sellingBuilding.costSell;
       activePlayer.owner.delete(sellingBuilding.name);
       sellingBuilding.owner = null;
-
-      games[req.payload.gameId].type = 'selling';
+      game.type = 'selling';
       req.payload.cost = sellingBuilding.costSell;
       break;
 
     case 'paying': {
       const ownerName =
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ].owner;
+        game.positions[game.players[game.activePlayerNumber].position].owner;
 
       const nickname = req.payload.nickname;
 
       const build =
-        games[req.payload.gameId].positions[
-          games[req.payload.gameId].players[
-            games[req.payload.gameId].activePlayerNumber
-          ].position
-        ];
+        game.positions[game.players[game.activePlayerNumber].position];
 
       //оплата
-      games[req.payload.gameId].players = games[req.payload.gameId].players.map(
-        (player) => {
-          if (player.nickname === nickname) {
-            player.money -= build.costParking;
-          } else if (player.nickname === ownerName) {
-            player.money += build.costParking;
-          }
-          return player;
+      game.players = game.players.map((player) => {
+        if (player.nickname === nickname) {
+          player.money -= build.costParking;
+        } else if (player.nickname === ownerName) {
+          player.money += build.costParking;
         }
-      );
+        return player;
+      });
 
-      games[req.payload.gameId].type = 'paidTax';
+      game.type = 'paidTax';
       req.payload.ownerName = ownerName;
       req.payload.costParking = build.costParking;
     }
 
     case 'stepend':
-      if (req.payload.nickname === games[req.payload.gameId].activePlayer) {
-        games[req.payload.gameId].activePlayerNumber =
-          games[req.payload.gameId].activePlayerNumber + 1 <
-          games[req.payload.gameId].players.length
-            ? games[req.payload.gameId].activePlayerNumber + 1
+      if (req.payload.nickname === game.activePlayer) {
+        game.activePlayerNumber =
+          game.activePlayerNumber + 1 < game.players.length
+            ? game.activePlayerNumber + 1
             : 0;
-        games[req.payload.gameId].activePlayer =
-          games[req.payload.gameId].nicknames[
-            games[req.payload.gameId].activePlayerNumber
-          ];
-        games[req.payload.gameId].type = 'step';
+        game.activePlayer = game.nicknames[game.activePlayerNumber];
+        game.type = 'step';
       }
       break;
 
     case 'chatMessage': {
-      const actualPlayer = games[req.payload.gameId].players.filter(
+      const actualPlayer = game.players.filter(
         (player) => player.nickname === req.payload.nickname
       )[0];
       req.payload.color = actualPlayer.color;
