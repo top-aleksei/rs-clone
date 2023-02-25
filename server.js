@@ -462,7 +462,7 @@ function logic(req) {
   const game = games[gameId];
   const currentPlayerNumber = game.activePlayerNumber;
   const currentPlayer = game.players[currentPlayerNumber];
-  const currentPosition = game.positions[currentPlayer.position];
+  let currentPosition = game.positions[currentPlayer.position];
 
   switch (req.event) {
     case 'step':
@@ -472,6 +472,8 @@ function logic(req) {
       currentPlayer.position =
         currentPlayer.position + req.payload.boneOne + req.payload.boneTwo;
       if (currentPlayer.position > 40) currentPlayer.position -= 40;
+
+      currentPosition = game.positions[currentPlayer.position];
 
       // если позиция на здании и свободна
       if (
