@@ -14,7 +14,12 @@
 
   &__cost {
     position: absolute;
-    background-color: red;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -102,10 +107,9 @@
   background-image: url('./assets/img/board/question.png');
 }
 .card:nth-child(8) .card__cost {
-  top: -25px;
-  left: 0;
-  background-color: rgb(175, 114, 29);
+  display: none;
 }
+
 .card:nth-child(9) {
   top: 0;
   left: 485px;
@@ -115,7 +119,9 @@
   background-size: 45%;
 }
 .card:nth-child(9) .card__cost {
-  display: none;
+  top: -25px;
+  left: 0;
+  background-color: rgb(175, 114, 29);
 }
 
 .card:nth-child(10) {
@@ -144,6 +150,7 @@
   right: -25px;
   background-color: rgb(29, 158, 175);
 }
+
 .card:nth-child(13) {
   top: 155px;
   right: 0;
@@ -499,4 +506,25 @@
   top: 0;
   left: -25px;
   background-color: rgb(99, 98, 98);
+}
+
+.card:nth-child(12) .card__cost-text,
+.card:nth-child(13) .card__cost-text,
+.card:nth-child(14) .card__cost-text,
+.card:nth-child(15) .card__cost-text,
+.card:nth-child(16) .card__cost-text,
+.card:nth-child(17) .card__cost-text,
+.card:nth-child(19) .card__cost-text,
+.card:nth-child(20) .card__cost-text {
+  transform: rotate(90deg);
+}
+
+.card:nth-child(32) .card__cost-text,
+.card:nth-child(33) .card__cost-text,
+.card:nth-child(35) .card__cost-text,
+.card:nth-child(36) .card__cost-text,
+.card:nth-child(38) .card__cost-text,
+.card:nth-child(39) .card__cost-text,
+.card:nth-child(40) .card__cost-text {
+  transform: rotate(-90deg);
 }
