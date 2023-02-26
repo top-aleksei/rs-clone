@@ -9,6 +9,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   { id: 3 },
   {
@@ -19,6 +20,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   { id: 5 },
   {
@@ -29,6 +31,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   {
     id: 7,
@@ -38,6 +41,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   { id: 8 },
   {
@@ -48,6 +52,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   {
     id: 10,
@@ -57,6 +62,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'top',
   },
   { id: 11 },
   {
@@ -67,6 +73,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'right',
   },
   {
     id: 13,
@@ -75,6 +82,7 @@ export const allCells = [
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    row: 'right',
   },
   {
     id: 14,
@@ -84,15 +92,17 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'right',
   },
   {
     id: 15,
     type: 'build',
-    name: 'krasnyi',
+    name: 'readeater',
     owner: null,
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'right',
   },
   {
     id: 16,
@@ -101,6 +111,7 @@ export const allCells = [
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    row: 'right',
   },
   {
     id: 17,
@@ -110,6 +121,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'right',
   },
   { id: 18 },
   {
@@ -120,6 +132,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'right',
   },
   {
     id: 20,
@@ -128,6 +141,7 @@ export const allCells = [
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    row: 'right',
   },
   { id: 21 },
   {
@@ -138,6 +152,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   { id: 23 },
   {
@@ -148,6 +163,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   {
     id: 25,
@@ -156,6 +172,7 @@ export const allCells = [
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    row: 'bottom',
   },
   {
     id: 26,
@@ -165,6 +182,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   {
     id: 27,
@@ -174,6 +192,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   {
     id: 28,
@@ -183,6 +202,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   {
     id: 29,
@@ -192,6 +212,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'bottom',
   },
   {
     id: 30,
@@ -200,6 +221,7 @@ export const allCells = [
     owner: null,
     costBuy: 1000,
     costSell: 500,
+    row: 'bottom',
   },
   { id: 31 },
   {
@@ -210,6 +232,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
   {
     id: 33,
@@ -219,6 +242,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
   { id: 34 },
   {
@@ -229,6 +253,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
   {
     id: 36,
@@ -238,6 +263,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
   { id: 37 },
   {
@@ -248,6 +274,7 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
   { id: 39 },
   {
@@ -258,5 +285,6 @@ export const allCells = [
     costBuy: 1000,
     costSell: 500,
     costParking: 1000,
+    row: 'left',
   },
 ];

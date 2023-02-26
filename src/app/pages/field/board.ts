@@ -30,7 +30,13 @@ class Board {
   }
 
   drawCells(widthCell: number, heightCell: number, id: number) {
-    new Cell(this.fieldContainer.node, widthCell, heightCell, id);
+    new Cell(
+      this.fieldContainer.node,
+      widthCell,
+      heightCell,
+      id,
+      this.gameInfo,
+    );
   }
 
   render() {
@@ -70,15 +76,16 @@ class Board {
       `token-${infoData.activePlayer}`,
     ) as HTMLElement;
 
-    const currentPos = this.gameInfo.players.find(
-      (el) => el.nickname === infoData.activePlayer,
-    )?.position || 1;
+    const currentPos =
+      this.gameInfo.players.find((el) => el.nickname === infoData.activePlayer)
+        ?.position || 1;
 
     this.gameInfo = infoData;
 
-    const nextPos = this.gameInfo.players.find(
-      (el) => el.nickname === this.gameInfo.activePlayer,
-    )?.position || 1;
+    const nextPos =
+      this.gameInfo.players.find(
+        (el) => el.nickname === this.gameInfo.activePlayer,
+      )?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
@@ -228,18 +235,18 @@ class Board {
     }
   }
 
-  changeWindowSize () {
+  changeWindowSize() {
     this.resizeBoard();
     window.addEventListener('resize', this.resizeBoard);
   }
 
-  resizeBoard () {
+  resizeBoard() {
     const area = document.querySelector('.table');
     const maxWidthBoard = 1055;
     const maxHeigthBoard = 753;
     const scaleValue = Math.min(
       window.innerWidth / maxWidthBoard,
-      window.innerHeight / maxHeigthBoard
+      window.innerHeight / maxHeigthBoard,
     );
 
     (<HTMLElement>area).style.transform = `scale(${scaleValue})`;
