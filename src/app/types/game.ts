@@ -26,6 +26,17 @@ export interface PlayerInGame {
   color: string;
 }
 
+export interface Factory {
+  id: number;
+  type?: string;
+  name?: string;
+  owner?: string | null;
+  costBuy?: number;
+  costSell?: number;
+  costParking?: number;
+  row?: string;
+}
+
 export enum Colors {
   green = 'rgba(21, 140, 20, 0.2)',
   red = 'rgba(252, 7, 7, 0.2)',
