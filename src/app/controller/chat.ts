@@ -60,3 +60,18 @@ export function createBuyMessage(color: string, name: string, factory: string) {
   new Control(elem.node, 'span', 'chat__message', message);
   return elem.node;
 }
+
+export function createShouldPayMessage(color: string, data: any) {
+  const { activePlayer, ownerName, costParking } = data;
+  const elem = new Control(null, 'div', 'chat__item');
+  const player = new Control(elem.node, 'span', 'chat__player', activePlayer);
+  player.node.style.color = color;
+  let message;
+  if (activePlayer === ownerName) {
+    message = ' stepped on his cell';
+  } else {
+    message = ` stepped on ${ownerName}'s cell and should pay him ${costParking}`;
+  }
+  new Control(elem.node, 'span', 'chat__message', message);
+  return elem.node;
+}

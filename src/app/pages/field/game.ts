@@ -5,6 +5,7 @@ import {
   createBuyMessage,
   createChatMessage,
   createMessageThrow,
+  createShouldPayMessage,
 } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
@@ -81,16 +82,19 @@ class Game {
           this.stepOnBonus(data);
         }
         if (data.type === 'payingTax' && this.isActive()) {
+          const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
+          setTimeout(() => {
+            const messageHTML = createShouldPayMessage(
+              this.getActiveColor(),
+              data,
+            );
+            this.board.fieldCenter.addMessage(messageHTML);
+          }, delay);
           if (data.activePlayer !== data.ownerName) {
-            const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
             setTimeout(() => {
-              this.board.fieldCenter.renderPayPopUp(
-                data,
-                this.players.rerenderMoney.bind(this.players, data.players),
-              );
+              this.board.fieldCenter.renderPayPopUp(data);
             }, delay);
           } else {
-            console.log(data.activePlayer, ' stepped on his cell!');
             setTimeout(() => {
               ws.send(
                 JSON.stringify({
@@ -132,6 +136,13 @@ class Game {
           info.message,
         );
         this.board.fieldCenter.addMessage(messageHTML);
+        // event when someone payed
+      } else if (res.event === 'paying') {
+        const data = res.payload.players;
+        this.players.rerenderMoney(data);
+        if (this.isActive()) {
+          this.sendEndStep();
+        }
       }
     });
   }
@@ -210,6 +221,18 @@ class Game {
       this.gameInfo.players.find(
         (el) => el.nickname === this.gameInfo.activePlayer,
       )?.color || 'white'
+    );
+  }
+
+  sendEndStep() {
+    ws.send(
+      JSON.stringify({
+        event: 'stepend',
+        payload: {
+          gameId: this.gameInfo.gameId,
+          nickname: this.name,
+        },
+      }),
     );
   }
 }

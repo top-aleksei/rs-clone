@@ -74,7 +74,6 @@ class Cell {
       if (el && +el.id === this.id) {
         console.log(el);
       } else {
-        console.log('hui');
         wrapper.destroy();
         (board as HTMLElement).onclick = () => {};
       }

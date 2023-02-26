@@ -111,7 +111,7 @@ class CenterItem {
     };
   }
 
-  renderPayPopUp(data: any, rerenderMoney: () => void) {
+  renderPayPopUp(data: any) {
     const container = new Control(this.container.node, 'div', 'popup');
     const wrapper = new Control(container.node, 'div', 'popup__message');
     const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
@@ -119,10 +119,9 @@ class CenterItem {
     const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
     const pay = new Control(btns.node, 'button', 'popup__btn', 'PAY');
     pay.node.onclick = () => {
-      rerenderMoney();
       ws.send(
         JSON.stringify({
-          event: 'stepend',
+          event: 'paying',
           payload: {
             gameId: this.gameInfo.gameId,
             nickname: this.name,
@@ -132,28 +131,6 @@ class CenterItem {
       container.destroy();
     };
   }
-
-  // renderBonusPopUp(data: any, rerenderMoney: () => void) {
-  //   const container = new Control(this.container.node, 'div', 'popup');
-  //   const wrapper = new Control(container.node, 'div', 'popup__message');
-  //   const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
-  //   new Control(wrapper.node, 'p', 'popup__text', text);
-  //   const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
-  //   const pay = new Control(btns.node, 'button', 'popup__btn', 'PAY');
-  //   pay.node.onclick = () => {
-  //     rerenderMoney();
-  //     ws.send(
-  //       JSON.stringify({
-  //         event: 'stepend',
-  //         payload: {
-  //           gameId: this.gameInfo.gameId,
-  //           nickname: this.name,
-  //         },
-  //       }),
-  //     );
-  //     container.destroy();
-  //   };
-  // }
 
   rollDiceAnimation(diceValues: number[]) {
     diceRoller({
