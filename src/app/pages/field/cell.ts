@@ -59,9 +59,21 @@ class Cell {
     (<HTMLImageElement>this.costCard.node).id = `cost-${this.id}`;
 
     (<HTMLImageElement>this.costCardText.node).innerText = `${this.factoryInfo?.costBuy}$`;
+
+    this.container.node.addEventListener('click', (e) =>
+      this.renderFactoryPopUp(e),
+    );
   }
 
-  renderFactoryPopUp() {
+  renderFactoryPopUp(event: Event) {
+    const openEl = (event.target as HTMLElement).closest('.factory');
+    if (openEl) {
+      return;
+    }
+
+    const allMenu = document.querySelectorAll('.factory');
+    allMenu.forEach((el) => el.remove());
+
     const wrapper = new Control(this.container.node, 'div', 'factory');
     wrapper.node.id = `f${this.id}`;
     new Control(wrapper.node, 'p', 'factory__title', this.factoryInfo?.name);
@@ -69,14 +81,14 @@ class Cell {
       ? `Owner: ${this.factoryInfo?.owner}`
       : 'no one owns it';
     new Control(wrapper.node, 'p', 'factory__subtitle', ownerText);
-    const board = document.querySelector('.board');
-    (board as HTMLElement).onclick = (e) => {
+    const boardWrap = document.querySelector('.wrapper');
+    (boardWrap as HTMLElement).onclick = (e) => {
       const el = (e.target as HTMLElement).closest('.card');
       if (el && +el.id === this.id) {
-        console.log(el);
+        //console.log(el);
       } else {
         wrapper.destroy();
-        (board as HTMLElement).onclick = () => {};
+        (boardWrap as HTMLElement).onclick = () => {};
       }
     };
   }
