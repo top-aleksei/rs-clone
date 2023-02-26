@@ -68,11 +68,9 @@ class Game {
 
         // render Buy popup
         if (data.type === 'abilityToByu' && this.isActive()) {
-          const name = data.buildName;
-          const cost = data.buildCost;
           const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
           setTimeout(() => {
-            this.board.fieldCenter.renderBuyPopUp(name, cost);
+            this.board.fieldCenter.renderBuyPopUp(data);
           }, delay);
         }
         if (data.type === 'buying') {
@@ -81,46 +79,14 @@ class Game {
         if (data.type === 'bonus') {
           this.stepOnBonus(data);
         }
-        if (data.type === 'payingTax' && this.isActive()) {
-          const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
-          setTimeout(() => {
-            const messageHTML = createShouldPayMessage(
-              this.getActiveColor(),
-              data,
-            );
-            this.board.fieldCenter.addMessage(messageHTML);
-          }, delay);
-          if (data.activePlayer !== data.ownerName) {
-            setTimeout(() => {
-              this.board.fieldCenter.renderPayPopUp(data);
-            }, delay);
-          } else {
-            setTimeout(() => {
-              ws.send(
-                JSON.stringify({
-                  event: 'stepend',
-                  payload: {
-                    gameId: this.gameInfo.gameId,
-                    nickname: this.name,
-                  },
-                }),
-              );
-            }, 3000);
-          }
+        if (data.type === 'payingTax') {
+          this.payingTax(data);
         }
 
         // temp (add temp second condition)
         if (this.isActive() && data.type === 'next') {
           setTimeout(() => {
-            ws.send(
-              JSON.stringify({
-                event: 'stepend',
-                payload: {
-                  gameId: this.gameInfo.gameId,
-                  nickname: this.name,
-                },
-              }),
-            );
+            this.sendEndStep();
           }, 3000);
         }
         // temp
@@ -162,15 +128,7 @@ class Game {
 
     if (this.isActive()) {
       setTimeout(() => {
-        ws.send(
-          JSON.stringify({
-            event: 'stepend',
-            payload: {
-              gameId: this.gameInfo.gameId,
-              nickname: this.name,
-            },
-          }),
-        );
+        this.sendEndStep();
       }, 3000);
     }
   }
@@ -205,17 +163,29 @@ class Game {
     this.players.rerenderMoney(data.players);
 
     if (this.isActive()) {
-      ws.send(
-        JSON.stringify({
-          event: 'stepend',
-          payload: {
-            gameId: this.gameInfo.gameId,
-            nickname: this.name,
-          },
-        }),
-      );
+      this.sendEndStep();
     }
   }
+
+  payingTax(data: any) {
+    const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
+    setTimeout(() => {
+      const messageHTML = createShouldPayMessage(this.getActiveColor(), data);
+      this.board.fieldCenter.addMessage(messageHTML);
+    }, delay);
+    if (this.isActive()) {
+      if (data.activePlayer !== data.ownerName) {
+        setTimeout(() => {
+          this.board.fieldCenter.renderPayPopUp(data);
+        }, delay);
+      } else {
+        setTimeout(() => {
+          this.sendEndStep();
+        }, 3000);
+      }
+    }
+  }
+
   getActiveColor() {
     return (
       this.gameInfo.players.find(

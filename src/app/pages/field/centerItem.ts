@@ -65,10 +65,14 @@ class CenterItem {
     };
   }
 
-  renderBuyPopUp(name: string, price: number) {
+  renderBuyPopUp(data: any) {
+    const { buildName, buildCost, activePlayer } = data;
+    const playerMoney = data.players.find(
+      (el: { nickname: string }) => el.nickname === activePlayer,
+    ).money;
     const container = new Control(this.container.node, 'div', 'popup');
     const wrapper = new Control(container.node, 'div', 'popup__message');
-    const text = `Do you want to buy ${name} for ${price}$`;
+    const text = `Do you want to buy ${buildName} for ${buildCost}$`;
     new Control(wrapper.node, 'p', 'popup__text', text);
     const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
     const accept = new Control(
@@ -83,6 +87,10 @@ class CenterItem {
       'popup__btn popup__btn_red',
       'DECLINE',
     );
+    if (playerMoney < buildCost) {
+      new Control(wrapper.node, 'div', '', 'You need more money to buy it');
+      accept.node.setAttribute('disabled', 'true');
+    }
     accept.node.onclick = () => {
       ws.send(
         JSON.stringify({
@@ -90,7 +98,7 @@ class CenterItem {
           payload: {
             gameId: this.gameInfo.gameId,
             nickname: this.name,
-            buildName: name,
+            buildName,
           },
         }),
       );
