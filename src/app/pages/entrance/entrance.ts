@@ -76,8 +76,9 @@ class Entrance {
       window.innerWidth / maxWidthBoard,
       window.innerHeight / maxHeigthBoard,
     );
-
-    (<HTMLElement>entranceContainer).style.transform = `scale(${scaleValue})`;
+    if (<HTMLElement>entranceContainer) {
+      (<HTMLElement>entranceContainer).style.transform = `scale(${scaleValue})`;
+    }
   }
 }
 

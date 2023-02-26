@@ -7,6 +7,7 @@ class Cell {
   container: Control;
   imageCard: Control;
   costCard: Control;
+  costCardText: Control;
   cardWidth: number;
   cardHeight: number;
   id: number;
@@ -23,6 +24,7 @@ class Cell {
     this.container = new Control(parent, 'div', 'card');
     this.imageCard = new Control(this.container.node, 'div', 'card__img');
     this.costCard = new Control(this.container.node, 'div', 'card__cost');
+    this.costCardText = new Control(this.costCard.node, 'div', 'card__cost-text');
     this.cardWidth = cardWidth;
     this.cardHeight = cardHeight;
     this.id = id;
@@ -55,9 +57,8 @@ class Cell {
     }
 
     (<HTMLImageElement>this.costCard.node).id = `cost-${this.id}`;
-    this.container.node.addEventListener('click', () =>
-      this.renderFactoryPopUp(),
-    );
+
+    (<HTMLImageElement>this.costCardText.node).innerText = `${this.factoryInfo?.costBuy}$`;
   }
 
   renderFactoryPopUp() {
