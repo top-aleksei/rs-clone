@@ -70,9 +70,12 @@ class Cell {
     if (openEl) {
       return;
     }
+    if (this.factoryInfo?.type !== 'build' && (event.target as HTMLElement).closest('.card')) {
+      this.removePopUp();
+      return;
+    }
 
-    const allMenu = document.querySelectorAll('.factory');
-    allMenu.forEach((el) => el.remove());
+    this.removePopUp();
 
     const wrapper = new Control(this.container.node, 'div', 'factory');
     wrapper.node.id = `f${this.id}`;
@@ -91,6 +94,14 @@ class Cell {
         (boardWrap as HTMLElement).onclick = () => {};
       }
     };
+    if (this.id >= 12 && this.id <= 20) {
+      wrapper.node.style.right = '0px';
+    }
+  }
+
+  removePopUp() {
+    const allMenu = document.querySelectorAll('.factory');
+    allMenu.forEach((el) => el.remove());
   }
 }
 
