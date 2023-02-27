@@ -76,15 +76,15 @@ class Board {
       `token-${infoData.activePlayer}`,
     ) as HTMLElement;
 
-    const currentPos = this.gameInfo.players.find(
-      (el) => el.nickname === infoData.activePlayer,
-    )?.position || 1;
+    const currentPos =
+      this.gameInfo.players.find((el) => el.nickname === infoData.activePlayer)
+        ?.position || 1;
 
     this.gameInfo = infoData;
 
-    const nextPos = this.gameInfo.players.find(
-      (el) => el.nickname === this.gameInfo.activePlayer,
-    )?.position || 1;
+    const nextPos =
+      this.gameInfo.players.find((el) => el.nickname === this.gameInfo.activePlayer)
+        ?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
