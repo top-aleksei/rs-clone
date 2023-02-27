@@ -1,10 +1,11 @@
+import { allCells } from './cellsInfo';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import diceRoller from 'dice-roller-3d';
 
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { GameInfo } from '../../types/game';
+import { GameInfo, Player } from '../../types/game';
 
 class CenterItem {
   container: Control;
@@ -126,24 +127,77 @@ class CenterItem {
   }
 
   renderPayPopUp(data: any) {
+    const playerMoney = data.players.find(
+      (el: { nickname: string }) => el.nickname === data.activePlayer,
+    ).money;
     const container = new Control(this.container.node, 'div', 'popup');
-    const wrapper = new Control(container.node, 'div', 'popup__message');
-    const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
-    new Control(wrapper.node, 'p', 'popup__text', text);
-    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
-    const pay = new Control(btns.node, 'button', 'popup__btn', 'PAY');
-    pay.node.onclick = () => {
+
+    const x = this.countAllPossibleMoney(data);
+    if (x < data.costParking) {
+      console.log('tobi pizda');
+      console.log('possible money', x);
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      new Control(
+        wrapper.node,
+        'p',
+        'popup__text',
+        'NO CHANCE. YOU ARE BANKROT',
+      );
       ws.send(
         JSON.stringify({
-          event: 'paying',
+          event: 'banckrot',
           payload: {
             gameId: this.gameInfo.gameId,
             nickname: this.name,
           },
         }),
       );
-      container.destroy();
-    };
+    } else {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
+      new Control(wrapper.node, 'p', 'popup__text', text);
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
+      pay.node.onclick = () => {
+        ws.send(
+          JSON.stringify({
+            event: 'paying',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+            },
+          }),
+        );
+        container.destroy();
+      };
+      pay.node.setAttribute('data-cost', data.costParking);
+      if (playerMoney < data.costParking) {
+        pay.node.setAttribute('disabled', 'true');
+        new Control(
+          wrapper.node,
+          'div',
+          'popup__description',
+          'You have not enough money, try to sell something',
+        );
+      }
+    }
+  }
+
+  countAllPossibleMoney(data: any) {
+    const curPlayerName = data.activePlayer;
+    const allPlayers: Player[] = data.players;
+    const playerInfo = allPlayers.find((el) => el.nickname === curPlayerName);
+    const realMoney = playerInfo?.money || 0;
+    const owns = playerInfo?.owner || [];
+    let potentialMoney = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const val of owns) {
+      const fMoney = allCells.find((el) => el.name === val)?.costSell;
+      if (fMoney) {
+        potentialMoney += fMoney;
+      }
+    }
+    return realMoney + potentialMoney;
   }
 
   rollDiceAnimation(diceValues: number[]) {
