@@ -136,7 +136,7 @@ class Game {
       setTimeout(() => {
         this.sendEndStep();
       }, 3000);
-    } else {
+    } else if (this.isActive()) {
       setTimeout(() => {
         this.board.fieldCenter.renderBonusPopUp(data);
       }, 3000);

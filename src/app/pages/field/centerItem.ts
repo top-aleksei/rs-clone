@@ -51,9 +51,11 @@ class CenterItem {
   }
 
   renderThrowDicePopup() {
+    console.log('throw');
     const container = new Control(this.container.node, 'div', 'popup');
     const rollButton = new Control(container.node, 'div', 'popup__roll');
     rollButton.node.onclick = () => {
+      container.destroy();
       const data = {
         event: 'step',
         payload: {
@@ -62,11 +64,11 @@ class CenterItem {
         },
       };
       ws.send(JSON.stringify(data));
-      container.destroy();
     };
   }
 
   renderBuyPopUp(data: any) {
+    console.log('buy');
     const { buildName, buildCost, activePlayer } = data;
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === activePlayer,
@@ -99,6 +101,7 @@ class CenterItem {
       accept.node.setAttribute('disabled', 'true');
     }
     accept.node.onclick = () => {
+      container.destroy();
       ws.send(
         JSON.stringify({
           event: 'buying',
@@ -109,10 +112,10 @@ class CenterItem {
           },
         }),
       );
-      container.destroy();
     };
 
     decline.node.onclick = () => {
+      container.destroy();
       ws.send(
         JSON.stringify({
           event: 'stepend',
@@ -122,11 +125,11 @@ class CenterItem {
           },
         }),
       );
-      container.destroy();
     };
   }
 
   renderPayPopUp(data: any) {
+    console.log('pay');
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === data.activePlayer,
     ).money;
@@ -158,6 +161,7 @@ class CenterItem {
       const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
       const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
       pay.node.onclick = () => {
+        container.destroy();
         ws.send(
           JSON.stringify({
             event: 'paying',
@@ -167,7 +171,6 @@ class CenterItem {
             },
           }),
         );
-        container.destroy();
       };
       pay.node.setAttribute('data-cost', data.costParking);
       if (playerMoney < data.costParking) {
@@ -182,6 +185,7 @@ class CenterItem {
     }
   }
   renderBonusPopUp(data: any) {
+    console.log('bonus');
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === data.activePlayer,
     ).money;
@@ -213,6 +217,7 @@ class CenterItem {
       const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
       // todo stepend
       pay.node.onclick = () => {
+        container.destroy();
         ws.send(
           JSON.stringify({
             event: 'stepend',
@@ -222,7 +227,6 @@ class CenterItem {
             },
           }),
         );
-        container.destroy();
       };
       // todo
       pay.node.setAttribute('data-cost', data.costParking);
