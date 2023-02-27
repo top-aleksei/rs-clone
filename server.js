@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const positions = require('./positions.js');
+const gameLogic = require('./gameLogic.js');
 
 const games = {};
 const players = new Set();
@@ -68,25 +69,47 @@ function start() {
 
     wsClient.on('close', async () => {
       if (wsClient.gameId) {
-        games[wsClient.gameId].players = games[wsClient.gameId].players.filter(
-          (player) => player !== wsClient
-        );
-        games[wsClient.gameId].nicknames = games[
-          wsClient.gameId
-        ].nicknames.filter((nickname) => nickname !== wsClient.nickname);
-
-        const req = {
-          event: 'leave',
-          payload: {
-            gameId: wsClient.gameId,
-            qty: games[wsClient.gameId].qty,
-            nicknames: games[wsClient.gameId].nicknames,
-          },
-        };
-        initGames(wsClient, req);
-        multicast(req);
+        if (games[wsClient.gameId].players < games[wsClient.gameId].qty) {
+          games[wsClient.gameId].players = games[
+            wsClient.gameId
+          ].players.filter((player) => player !== wsClient);
+          games[wsClient.gameId].nicknames = games[
+            wsClient.gameId
+          ].nicknames.filter((nickname) => nickname !== wsClient.nickname);
+          const req = {
+            event: 'leave',
+            payload: {
+              gameId: wsClient.gameId,
+              qty: games[wsClient.gameId].qty,
+              nicknames: games[wsClient.gameId].nicknames,
+            },
+          };
+          initGames(wsClient, req);
+          multicast(req);
+          players.delete(wsClient);
+        } else if (
+          games[wsClient.gameId].players.length == games[wsClient.gameId].qty
+        ) {
+          games[wsClient.gameId].players = games[wsClient.gameId].players.map(
+            (player) => {
+              if (player == wsClient) {
+                player.active = false;
+              }
+              return player;
+            }
+          );
+          const req = {
+            event: 'leftGame',
+            payload: {
+              gameId: wsClient.gameId,
+              nickname: wsClient.nickname,
+            },
+          };
+          broadcast(req);
+          logic(req);
+          broadcast(req);
+        }
       }
-      players.delete(wsClient);
     });
   });
 }
@@ -201,6 +224,7 @@ function multicast(req) {
       player.color = colors[index];
       player.money = 10000;
       player.owner = [];
+      player.active = true;
     });
     //задать свойства для game
     games[req.payload.gameId].positions = JSON.parse(JSON.stringify(positions));
@@ -398,6 +422,18 @@ function broadcast(req) {
           };
         }
         break;
+
+      case 'leftGame':
+        {
+          res = {
+            event: 'leftGame',
+            payload: {
+              gameId: req.payload.gameId,
+              nickname: req.payload.nickname,
+            },
+          };
+        }
+        break;
       /*case 'join':
         res = {
           event: 'connectToPlay',
@@ -569,22 +605,39 @@ function logic(req) {
     }
 
     case 'stepend':
-      if (req.payload.nickname === game.activePlayer) {
+      gameLogic.nextActivePlayer(game);
+      /*
         game.activePlayerNumber =
           game.activePlayerNumber + 1 < game.players.length
             ? game.activePlayerNumber + 1
             : 0;
-        game.activePlayer = game.nicknames[game.activePlayerNumber];
-        game.type = 'step';
-      }
+        game.activePlayer = game.nicknames[game.activePlayerNumber];*/
+      game.type = 'step';
+
       break;
 
-    case 'chatMessage': {
-      const actualPlayer = game.players.filter(
-        (player) => player.nickname === req.payload.nickname
-      )[0];
-      req.payload.color = actualPlayer.color;
-    }
+    case 'chatMessage':
+      {
+        const actualPlayer = game.players.filter(
+          (player) => player.nickname === req.payload.nickname
+        )[0];
+        req.payload.color = actualPlayer.color;
+      }
+      break;
+    case 'leftGame':
+      {
+        if (req.payload.nickname === game.activePlayer) {
+          req.event = 'stepend';
+          /* game.activePlayerNumber =
+            game.activePlayerNumber + 1 < game.players.length
+              ? game.activePlayerNumber + 1
+              : 0;
+          game.activePlayer = game.nicknames[game.activePlayerNumber];*/
+          gameLogic.nextActivePlayer(game);
+          game.type = 'step';
+        }
+      }
+      break;
   }
 }
 
