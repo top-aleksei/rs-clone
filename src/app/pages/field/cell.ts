@@ -92,11 +92,22 @@ class Cell {
     this.removePopUp();
 
     const wrapper = new Control(this.container.node, 'div', 'factory');
-    new Control(wrapper.node, 'p', 'factory__title', this.factoryInfo?.name);
+    const nameFactory = `${this.factoryInfo?.company}`;
+    new Control(wrapper.node, 'p', 'factory__title', nameFactory);
     const ownerText = this.factoryInfo?.owner
       ? `Owner: ${this.factoryInfo?.owner}`
       : 'no one owns it';
     new Control(wrapper.node, 'p', 'factory__subtitle', ownerText);
+
+    const costFactory = `Factory cost: ${this.factoryInfo?.costBuy}$`;
+    new Control(wrapper.node, 'p', 'factory__cost', costFactory);
+
+    const sellFactory = `Sale cost: ${this.factoryInfo?.costSell}$`;
+    new Control(wrapper.node, 'p', 'factory__sale', sellFactory);
+
+    const renta = `Renta: ${this.factoryInfo?.costParking}$`;
+    new Control(wrapper.node, 'p', 'factory__renta', renta);
+
     if (this.player === this.factoryInfo?.owner) {
       if (this.player === state.activePlayer) {
         const sellBTN = new Control(
@@ -128,6 +139,7 @@ class Cell {
       wrapper.node.style.right = '3px';
     } else if (this.factoryInfo?.row === 'bottom') {
       wrapper.node.style.bottom = '3px';
+      wrapper.node.style.top = 'auto';
     }
   }
 

@@ -32,8 +32,10 @@ class Entrance {
         'REGISTRATE',
       );
       new Control(this.btns.node, 'button', 'entrance__btn login', 'LOGIN');
+      new Control(this.btns.node, 'div', 'entrance__author');
 
       this.addListenrs();
+      this.renderAuthor();
     }
   }
 
@@ -66,6 +68,22 @@ class Entrance {
       this.showLogIn.bind(this),
     );
     reg.render();
+  }
+
+  renderAuthor() {
+    const authorsBlock = document.querySelector('.entrance__author');
+    (<HTMLElement>authorsBlock).innerHTML = `
+    <div class="authors">
+      <a href="https://github.com/top-aleksei">top-aleksei | </a>
+      <a href="https://github.com/poznerrr">poznerrr | </a>
+      <a href="https://github.com/nike93">nike93</a>
+    </div>
+    <div class="year">2023
+    </div>
+    <div class="rs-link">
+      <a href="https://rs.school/js/"><img src="https://rollingscopes.com/images/logo_rs_text.svg"></a>
+    </div>
+    `;
   }
 
   resizeEntrance () {
