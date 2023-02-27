@@ -83,9 +83,8 @@ class Board {
     this.gameInfo = infoData;
 
     const nextPos =
-      this.gameInfo.players.find(
-        (el) => el.nickname === this.gameInfo.activePlayer,
-      )?.position || 1;
+      this.gameInfo.players.find((el) => el.nickname === this.gameInfo.activePlayer)
+        ?.position || 1;
 
     let posTopLine = currentPos;
     let posRightLine = 1;
@@ -244,10 +243,14 @@ class Board {
     const area = document.querySelector('.table');
     const maxWidthBoard = 1055;
     const maxHeigthBoard = 753;
-    const scaleValue = Math.min(
+    let scaleValue = Math.min(
       window.innerWidth / maxWidthBoard,
       window.innerHeight / maxHeigthBoard,
     );
+
+    if (scaleValue > 1) {
+      scaleValue = 1;
+    }
 
     (<HTMLElement>area).style.transform = `scale(${scaleValue})`;
   }

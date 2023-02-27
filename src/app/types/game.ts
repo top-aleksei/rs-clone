@@ -30,6 +30,7 @@ export interface Factory {
   id: number;
   type?: string;
   name?: string;
+  company?: string;
   owner?: string | null;
   costBuy?: number;
   costSell?: number;
