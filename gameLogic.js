@@ -1,6 +1,5 @@
 module.exports.nextActivePlayer = function (game) {
   if (this.activePlayersCount(game) === 0) {
-    //TODO: удалить игру
     return;
   }
   game.activePlayerNumber =
@@ -21,4 +20,23 @@ module.exports.activePlayersCount = function (game) {
 module.exports.isGameOver = function (game) {
   if (this.activePlayersCount(game) === 1) return true;
   return false;
+};
+
+module.exports.toDoBancrot = function (game, positions, nickname) {
+  game.players = game.players.map((player) => {
+    if (player.nickname === nickname) {
+      player.active = false;
+      player.owner = [];
+    }
+    return player;
+  });
+  for (key in positions) {
+    if (positions[key].owner === nickname) {
+      positions[key].owner = null;
+    }
+  }
+};
+
+module.exports.getWinner = function (game) {
+  return game.players.filter((player) => player.active === true)[0].nickname;
 };

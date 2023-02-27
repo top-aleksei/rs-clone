@@ -88,16 +88,21 @@ function start() {
           multicast(req);
           players.delete(wsClient);
         } else if (
-          games[wsClient.gameId].players.length == games[wsClient.gameId].qty
+          games[wsClient.gameId].players.length === games[wsClient.gameId].qty
         ) {
-          games[wsClient.gameId].players = games[wsClient.gameId].players.map(
+          gameLogic.toDoBancrot(
+            games[wsClient.gameId],
+            games[wsClient.gameId].positions,
+            wsClient.nickname
+          );
+          /*  games[wsClient.gameId].players = games[wsClient.gameId].players.map(
             (player) => {
               if (player == wsClient) {
                 player.active = false;
               }
               return player;
             }
-          );
+          );*/
           const req = {
             event: 'leftGame',
             payload: {
@@ -128,9 +133,6 @@ function initGames(ws, req) {
   } else if (req.event === 'join') {
     ws.nickname = req.payload.nickname;
     ws.gameId = req.payload.gameId;
-    /*games[gameId].players = games[gameId].players.filter(
-      (player) => player.nickname !== ws.nickname
-    );*/
     games[req.payload.gameId].players = [
       ...games[req.payload.gameId].players,
       ws,
@@ -148,32 +150,7 @@ function initGames(ws, req) {
       (player) => player.nickname
     );
   }
-} /*else if (games[gameId] && games[gameId].players?.length === qty) {
-    games[gameId].players = games[gameId].players.filter(
-      (player) => player.nickname !== ws.nickname
-    );
-    games[gameId].players = [...games[gameId].players, ws];
-    if (games[gameId].players?.length === qty) {
-      games[gameId].canPlay = true;
-      games[gameId].action = 'startGo';
-      games[gameId].activePlayer = 0;
-      games[gameId].whoGo =
-        games[gameId].players[games[gameId].activePlayer].id;
-    }
-  } else if (games[gameId] && games[gameId].players?.length > qty) {
-    if (
-      games[gameId].players.filter((player) => player.nickname !== ws.nickname)
-        .length > 0
-    ) {
-      games[gameId].players = games[gameId].players.filter(
-        (player) => player.nickname !== ws.nickname
-      );
-      games[gameId].players = [...games[gameId].players, ws];
-      games[gameId].canPlay = true;
-      games[gameId].action = 'startGo';
-    } else ws.send('Room is full');
-  }
-}*/
+}
 
 function multicast(req) {
   let res;
@@ -222,7 +199,7 @@ function multicast(req) {
     games[req.payload.gameId].players.map((player, index) => {
       player.position = 1;
       player.color = colors[index];
-      index == 0 ? (player.money = 10000000) : (player.money = 4000);
+      index == 0 ? (player.money = 10000000) : (player.money = 10);
       player.owner = [];
       player.active = true;
     });
@@ -330,10 +307,6 @@ function broadcast(req) {
           if (games[req.payload.gameId].type === 'bonus') {
             res.payload.bonusSize = req.payload.bonusSize;
           }
-
-          /* if (games[req.payload.gameId].type === 'buying') {
-            res.payload.byuing = req.payload.buildName;
-          }*/
         }
         break;
 
@@ -440,59 +413,25 @@ function broadcast(req) {
           res = {
             event: req.event,
             payload: {
+              gameId: req.payload.gameId,
               winner: req.payload.winner,
             },
           };
         }
         break;
-      /*case 'join':
-        res = {
-          event: 'connectToPlay',
-          payload: {
-            gameId: gameId,
-            success: true,
-            players: games[gameId].players.map((client) => {
-              return {
-                playerId: client.id,
-                playerName: client.nickname,
-                playerPosition: client.position,
-                playerMoney: client.money,
-                playerOwner: client.owner,
-              };
-            }),
-            canPlay: games[gameId].canPlay,
-            whoGo: games[gameId].whoGo,
-            action: games[gameId].action,
-          },
-        };
-        break;
-        case 'going':
-        if (req.payload.id === games[gameId].whoGo) {
-          games[gameId].action = 'finishGo';
-          if (client.id === games[gameId].whoGo) client.position += 1;
+
+      case 'banckrot':
+        {
           res = {
-            event: 'going',
+            event: req.event,
             payload: {
-              gameId: gameId,
-              success: true,
-              players: games[gameId].players.map((client) => {
-                return {
-                  playerId: client.id,
-                  playerName: client.nickname,
-                  playerPosition: client.position,
-                  playerMoney: client.money,
-                  playerOwner: client.owner,
-                };
-              }),
-              canPlay: games[gameId].canPlay,
-              whoGo: games[gameId].whoGo,
-              action: games[gameId].action,
+              gameId: req.payload.gameId,
+              nickname: req.payload.nickname,
             },
           };
         }
-
         break;
-*/
+
       default:
         res = {
           event: 'unknown',
@@ -598,7 +537,6 @@ function logic(req) {
     case 'paying':
       {
         const ownerName = currentPosition.owner;
-
         const nickname = req.payload.nickname;
 
         //оплата
@@ -623,13 +561,19 @@ function logic(req) {
         req.event = 'gameOver';
         req.payload.winner = game.activePlayer;
       } else game.type = 'step';
-      /*
-        game.activePlayerNumber =
-          game.activePlayerNumber + 1 < game.players.length
-            ? game.activePlayerNumber + 1
-            : 0;
-        game.activePlayer = game.nicknames[game.activePlayerNumber];*/
 
+      break;
+
+    case 'banckrot':
+      {
+        gameLogic.toDoBancrot(game, game.positions, req.payload.nickname);
+        broadcast(req);
+        gameLogic.nextActivePlayer(game);
+        if (gameLogic.isGameOver(game)) {
+          req.event = 'gameOver';
+          req.payload.winner = gameLogic.getWinner(game);
+        } else game.type = 'step';
+      }
       break;
 
     case 'chatMessage':
@@ -644,15 +588,9 @@ function logic(req) {
       {
         if (gameLogic.isGameOver(game)) {
           req.event = 'gameOver';
-          req.payload.winner = game.activePlayer;
+          req.payload.winner = gameLogic.getWinner(game);
         } else if (req.payload.nickname === game.activePlayer) {
-          /* game.activePlayerNumber =
-            game.activePlayerNumber + 1 < game.players.length
-              ? game.activePlayerNumber + 1
-              : 0;
-          game.activePlayer = game.nicknames[game.activePlayerNumber];*/
           gameLogic.nextActivePlayer(game);
-
           req.event = 'stepend';
           game.type = 'step';
         }
