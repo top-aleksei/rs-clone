@@ -434,6 +434,17 @@ function broadcast(req) {
           };
         }
         break;
+
+      case 'gameOver':
+        {
+          res = {
+            event: req.event,
+            payload: {
+              winner: req.payload.winner,
+            },
+          };
+        }
+        break;
       /*case 'join':
         res = {
           event: 'connectToPlay',
@@ -627,14 +638,19 @@ function logic(req) {
     case 'leftGame':
       {
         if (req.payload.nickname === game.activePlayer) {
-          req.event = 'stepend';
           /* game.activePlayerNumber =
             game.activePlayerNumber + 1 < game.players.length
               ? game.activePlayerNumber + 1
               : 0;
           game.activePlayer = game.nicknames[game.activePlayerNumber];*/
           gameLogic.nextActivePlayer(game);
-          game.type = 'step';
+          if (gameLogic.isGameOver) {
+            req.event = 'gameOver';
+            req.payload.winner = game.activePlayer;
+          } else {
+            req.event = 'stepend';
+            game.type = 'step';
+          }
         }
       }
       break;
