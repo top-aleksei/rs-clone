@@ -532,15 +532,17 @@ function logic(req) {
 
     case 'selling':
       //продающееся здание
-      const sellingBuilding = null;
+      let sellingBuilding = null;
       for (keys in positions) {
         if (positions[keys].name === req.payload.buildName) {
-          sellingBuilding = positions[keys].name;
+          sellingBuilding = positions[keys];
         }
       }
       // продающий игрок
       currentPlayer.money += sellingBuilding.costSell;
-      currentPlayer.owner.delete(sellingBuilding.name);
+      currentPlayer.owner = currentPlayer.owner.filter(
+        (building) => building !== sellingBuilding.name
+      );
       sellingBuilding.owner = null;
       game.type = 'selling';
       req.payload.cost = sellingBuilding.costSell;
