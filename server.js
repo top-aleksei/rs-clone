@@ -595,25 +595,27 @@ function logic(req) {
       req.payload.cost = sellingBuilding.costSell;
       break;
 
-    case 'paying': {
-      const ownerName = currentPosition.owner;
+    case 'paying':
+      {
+        const ownerName = currentPosition.owner;
 
-      const nickname = req.payload.nickname;
+        const nickname = req.payload.nickname;
 
-      //оплата
-      game.players = game.players.map((player) => {
-        if (player.nickname === nickname) {
-          player.money -= currentPosition.costParking;
-        } else if (player.nickname === ownerName) {
-          player.money += currentPosition.costParking;
-        }
-        return player;
-      });
+        //оплата
+        game.players = game.players.map((player) => {
+          if (player.nickname === nickname) {
+            player.money -= currentPosition.costParking;
+          } else if (player.nickname === ownerName) {
+            player.money += currentPosition.costParking;
+          }
+          return player;
+        });
 
-      game.type = 'paidTax';
-      req.payload.ownerName = ownerName;
-      req.payload.costParking = currentPosition.costParking;
-    }
+        game.type = 'paidTax';
+        req.payload.ownerName = ownerName;
+        req.payload.costParking = currentPosition.costParking;
+      }
+      break;
 
     case 'stepend':
       gameLogic.nextActivePlayer(game);
