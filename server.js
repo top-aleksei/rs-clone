@@ -199,7 +199,7 @@ function multicast(req) {
     games[req.payload.gameId].players.map((player, index) => {
       player.position = 1;
       player.color = colors[index];
-      index == 0 ? (player.money = 10000000) : (player.money = 10);
+      player.money = 10000;
       player.owner = [];
       player.active = true;
     });
