@@ -48,6 +48,16 @@
       transform: rotate(0deg);
     }
   }
+  &__author {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 630px;
+    width: 580px;
+    margin-left: 20px;
+    opacity: 0.7;
+  }
   .login {
     top: 150px;
     left: 470px;
@@ -79,4 +89,25 @@
     @include font(1.8rem, 1.8rem, 400);
     color: rgb(189, 37, 37);
   }
+}
+
+.authors {
+  a {
+    color: black;
+    text-decoration: none;
+  }
+  a:visited {
+    color:  black;
+  }
+}
+
+.rs-link {
+  display: flex;
+  justify-content: flex-end;
+  a {
+    text-align: center;
+    img {
+      width: 30%;
+    }
+  }  
 }
