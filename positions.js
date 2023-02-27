@@ -13,7 +13,7 @@ const positions = {
     type: 'build',
     name: 'makey',
     owner: null,
-    ccostBuy: 600,
+    costBuy: 600,
     costSell: 300,
     costParking: 250,
   },
