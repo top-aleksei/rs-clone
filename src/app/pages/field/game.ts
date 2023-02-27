@@ -114,6 +114,8 @@ class Game {
         }
       } else if (res.event === 'selling') {
         this.sellFactory(res.payload);
+      } else if (res.event === 'banckrot') {
+        this.players.renderBankrupt(res.payload.nickname);
       }
     });
   }
@@ -121,15 +123,22 @@ class Game {
   stepOnBonus(data: any) {
     const color = this.getActiveColor();
     const messageHTML = createBonusMessage(color, data.bonusSize);
+    const { money } = data.players.find(
+      (el: { nickname: string }) => el.nickname === data.activePlayer,
+    );
 
     setTimeout(() => {
       this.board.fieldCenter.addMessage(messageHTML);
       this.players.rerenderMoney(data.players);
     }, 2500);
 
-    if (this.isActive()) {
+    if (this.isActive() && money >= 0) {
       setTimeout(() => {
         this.sendEndStep();
+      }, 3000);
+    } else {
+      setTimeout(() => {
+        this.board.fieldCenter.renderBonusPopUp(data);
       }, 3000);
     }
   }

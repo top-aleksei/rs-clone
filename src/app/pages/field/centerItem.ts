@@ -130,12 +130,11 @@ class CenterItem {
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === data.activePlayer,
     ).money;
+
     const container = new Control(this.container.node, 'div', 'popup');
 
-    const x = this.countAllPossibleMoney(data);
-    if (x < data.costParking) {
-      console.log('tobi pizda');
-      console.log('possible money', x);
+    const actives = this.countAllPossibleMoney(data);
+    if (actives < data.costParking) {
       const wrapper = new Control(container.node, 'div', 'popup__message');
       new Control(
         wrapper.node,
@@ -170,6 +169,62 @@ class CenterItem {
         );
         container.destroy();
       };
+      pay.node.setAttribute('data-cost', data.costParking);
+      if (playerMoney < data.costParking) {
+        pay.node.setAttribute('disabled', 'true');
+        new Control(
+          wrapper.node,
+          'div',
+          'popup__description',
+          'You have not enough money, try to sell something',
+        );
+      }
+    }
+  }
+  renderBonusPopUp(data: any) {
+    const playerMoney = data.players.find(
+      (el: { nickname: string }) => el.nickname === data.activePlayer,
+    ).money;
+
+    const container = new Control(this.container.node, 'div', 'popup');
+    const actives = this.countAllPossibleMoney(data);
+    if (actives < 0) {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      new Control(
+        wrapper.node,
+        'p',
+        'popup__text',
+        'NO CHANCE. YOU ARE BANKROT',
+      );
+      ws.send(
+        JSON.stringify({
+          event: 'banckrot',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+          },
+        }),
+      );
+    } else if (playerMoney < 0) {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      const text = 'You have no money, sell something to continue game';
+      new Control(wrapper.node, 'p', 'popup__text', text);
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
+      // todo stepend
+      pay.node.onclick = () => {
+        ws.send(
+          JSON.stringify({
+            event: 'stepend',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+            },
+          }),
+        );
+        container.destroy();
+      };
+      // todo
       pay.node.setAttribute('data-cost', data.costParking);
       if (playerMoney < data.costParking) {
         pay.node.setAttribute('disabled', 'true');
