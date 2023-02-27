@@ -9,10 +9,11 @@ import {
 } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { Colors, GameInfo } from '../../types/game';
+import { Colors, GameInfo, Player } from '../../types/game';
 import Board from './board';
 import Players from './players';
 import state from '../../../common/state';
+import { reloadBuyPopUp } from '../../controller/reloadPopUps';
 
 class Game {
   container: Control;
@@ -111,6 +112,8 @@ class Game {
         if (this.isActive()) {
           this.sendEndStep();
         }
+      } else if (res.event === 'selling') {
+        this.sellFactory(res.payload);
       }
     });
   }
@@ -141,6 +144,26 @@ class Game {
       this.board.moveTokens(this.gameInfo);
       this.board.fieldCenter.addMessage(messageHTML);
     }, 1200);
+  }
+
+  sellFactory(data: any) {
+    const cell = allCells.find((el) => el.name === data.selling);
+    if (cell) {
+      cell.owner = null;
+    }
+    const id = cell?.id;
+
+    const elem = document.getElementById(String(id));
+    if (elem) {
+      elem.style.backgroundColor = 'transparent';
+    }
+    this.players.rerenderMoney(data.players);
+    if (this.name === data.activePlayer) {
+      const currentMoney = data.players.find(
+        (el: Player) => el.nickname === data.activePlayer,
+      ).money;
+      reloadBuyPopUp(currentMoney);
+    }
   }
 
   buyFactory(data: any) {

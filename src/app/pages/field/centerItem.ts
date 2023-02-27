@@ -78,9 +78,10 @@ class CenterItem {
     const accept = new Control(
       btns.node,
       'button',
-      'popup__btn popup__btn_green',
+      'popup__btn popup__btn_green pay',
       'BUY',
     );
+    accept.node.setAttribute('data-cost', buildCost);
     const decline = new Control(
       btns.node,
       'button',
@@ -88,7 +89,12 @@ class CenterItem {
       'DECLINE',
     );
     if (playerMoney < buildCost) {
-      new Control(wrapper.node, 'div', '', 'You need more money to buy it');
+      new Control(
+        wrapper.node,
+        'div',
+        'popup__description',
+        'You need more money to buy it',
+      );
       accept.node.setAttribute('disabled', 'true');
     }
     accept.node.onclick = () => {
