@@ -95,14 +95,6 @@ function start() {
             games[wsClient.gameId].positions,
             wsClient.nickname
           );
-          /*  games[wsClient.gameId].players = games[wsClient.gameId].players.map(
-            (player) => {
-              if (player == wsClient) {
-                player.active = false;
-              }
-              return player;
-            }
-          );*/
           const req = {
             event: 'leftGame',
             payload: {
