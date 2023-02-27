@@ -520,8 +520,8 @@ function logic(req) {
       //продающееся здание
       let sellingBuilding = null;
       for (keys in positions) {
-        if (positions[keys].name === req.payload.buildName) {
-          sellingBuilding = positions[keys];
+        if (game.positions[keys].name === req.payload.buildName) {
+          sellingBuilding = game.positions[keys];
         }
       }
       // продающий игрок
@@ -572,7 +572,10 @@ function logic(req) {
         if (gameLogic.isGameOver(game)) {
           req.event = 'gameOver';
           req.payload.winner = gameLogic.getWinner(game);
-        } else game.type = 'step';
+        } else {
+          req.event = 'stepend';
+          game.type = 'step';
+        }
       }
       break;
 
