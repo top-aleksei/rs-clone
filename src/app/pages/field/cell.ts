@@ -2,6 +2,9 @@
 import { allCells } from './cellsInfo';
 import Control from '../../../common/common';
 import { Factory, GameInfo } from '../../types/game';
+import { getNameLS } from '../../localStorage/localStorage';
+import state from '../../../common/state';
+import { ws } from '../../controller/socket';
 
 class Cell {
   container: Control;
@@ -13,6 +16,7 @@ class Cell {
   id: number;
   factoryInfo: Factory | undefined;
   gameInfo: GameInfo;
+  player: string;
 
   constructor(
     parent: HTMLElement,
@@ -24,12 +28,17 @@ class Cell {
     this.container = new Control(parent, 'div', 'card');
     this.imageCard = new Control(this.container.node, 'div', 'card__img');
     this.costCard = new Control(this.container.node, 'div', 'card__cost');
-    this.costCardText = new Control(this.costCard.node, 'div', 'card__cost-text');
+    this.costCardText = new Control(
+      this.costCard.node,
+      'div',
+      'card__cost-text',
+    );
     this.cardWidth = cardWidth;
     this.cardHeight = cardHeight;
     this.id = id;
     this.gameInfo = gameInfo;
     this.factoryInfo = allCells.find((el) => el.id === id);
+    this.player = getNameLS() || '';
     this.render();
   }
 
@@ -58,7 +67,9 @@ class Cell {
 
     (<HTMLImageElement>this.costCard.node).id = `cost-${this.id}`;
 
-    (<HTMLImageElement>this.costCardText.node).innerText = `${this.factoryInfo?.costBuy}$`;
+    (<HTMLImageElement>(
+      this.costCardText.node
+    )).innerText = `${this.factoryInfo?.costBuy}$`;
 
     this.container.node.addEventListener('click', (e) =>
       this.renderFactoryPopUp(e),
@@ -70,33 +81,65 @@ class Cell {
     if (openEl) {
       return;
     }
-    if (this.factoryInfo?.type !== 'build' && (event.target as HTMLElement).closest('.card')) {
+    if (
+      this.factoryInfo?.type !== 'build' &&
+      (event.target as HTMLElement).closest('.card')
+    ) {
       this.removePopUp();
       return;
     }
-
+    // console.log(state);
     this.removePopUp();
 
     const wrapper = new Control(this.container.node, 'div', 'factory');
-    wrapper.node.id = `f${this.id}`;
     new Control(wrapper.node, 'p', 'factory__title', this.factoryInfo?.name);
     const ownerText = this.factoryInfo?.owner
       ? `Owner: ${this.factoryInfo?.owner}`
       : 'no one owns it';
     new Control(wrapper.node, 'p', 'factory__subtitle', ownerText);
+    if (this.player === this.factoryInfo?.owner) {
+      if (this.player === state.activePlayer) {
+        const sellBTN = new Control(
+          wrapper.node,
+          'button',
+          'factory__btn',
+          'sell',
+        );
+        sellBTN.node.onclick = () => {
+          ws.send(
+            JSON.stringify({
+              event: 'selling',
+              payload: {
+                gameId: this.gameInfo.gameId,
+                activePlayer: state.activePlayer,
+                buildName: this.factoryInfo?.name,
+              },
+            }),
+          );
+          wrapper.destroy();
+        };
+      } else {
+        const description = 'You can sell item on your turn';
+        new Control(wrapper.node, 'p', 'factory__description', description);
+      }
+    }
+    this.closeCurrentPopUp(wrapper);
+    if (this.factoryInfo?.row === 'right') {
+      wrapper.node.style.right = '3px';
+    } else if (this.factoryInfo?.row === 'bottom') {
+      wrapper.node.style.bottom = '3px';
+    }
+  }
+
+  closeCurrentPopUp(wrapper: Control) {
     const boardWrap = document.querySelector('.wrapper');
     (boardWrap as HTMLElement).onclick = (e) => {
       const el = (e.target as HTMLElement).closest('.card');
-      if (el && +el.id === this.id) {
-        //console.log(el);
-      } else {
+      if (!el || +el.id !== this.id) {
         wrapper.destroy();
         (boardWrap as HTMLElement).onclick = () => {};
       }
     };
-    if (this.id >= 12 && this.id <= 20) {
-      wrapper.node.style.right = '0px';
-    }
   }
 
   removePopUp() {

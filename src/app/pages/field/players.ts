@@ -1,4 +1,5 @@
 import Control from '../../../common/common';
+import state from '../../../common/state';
 import { GameInfo, Player } from '../../types/game';
 import PlayersCard from './player-card';
 
@@ -16,10 +17,11 @@ class Players {
     this.gameInfo.players.forEach(
       (el) => new PlayersCard(this.container.node, el),
     );
-    this.showCurrentPlayer(this.gameInfo.activePlayer);
+    this.showCurrentPlayer();
   }
 
-  showCurrentPlayer(activePlayer: string) {
+  showCurrentPlayer() {
+    const { activePlayer } = state;
     const players = this.container.node.children;
     [...players].forEach((el) => {
       if (el.id === `card-${activePlayer}`) {

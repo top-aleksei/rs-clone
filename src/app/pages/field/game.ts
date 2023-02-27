@@ -12,6 +12,7 @@ import { getNameLS } from '../../localStorage/localStorage';
 import { Colors, GameInfo } from '../../types/game';
 import Board from './board';
 import Players from './players';
+import state from '../../../common/state';
 
 class Game {
   container: Control;
@@ -92,7 +93,8 @@ class Game {
         // temp
       } else if (res.event === 'startStep') {
         this.gameInfo.activePlayer = res.payload.activePlayer;
-        this.players.showCurrentPlayer(this.gameInfo.activePlayer);
+        state.activePlayer = res.payload.activePlayer;
+        this.players.showCurrentPlayer();
         this.activePlayerStartStep();
       } else if (res.event === 'chatMessage') {
         const info = res.payload;
@@ -115,11 +117,7 @@ class Game {
 
   stepOnBonus(data: any) {
     const color = this.getActiveColor();
-    const messageHTML = createBonusMessage(
-      color,
-      this.gameInfo.activePlayer,
-      data.bonusSize,
-    );
+    const messageHTML = createBonusMessage(color, data.bonusSize);
 
     setTimeout(() => {
       this.board.fieldCenter.addMessage(messageHTML);
@@ -138,11 +136,7 @@ class Game {
 
     const dice = [data.boneOne, data.boneTwo];
     this.board.fieldCenter.rollDiceAnimation(dice);
-    const messageHTML = createMessageThrow(
-      color,
-      this.gameInfo.activePlayer,
-      dice,
-    );
+    const messageHTML = createMessageThrow(color, dice);
     setTimeout(() => {
       this.board.moveTokens(this.gameInfo);
       this.board.fieldCenter.addMessage(messageHTML);
@@ -154,7 +148,11 @@ class Game {
     const message = createBuyMessage(color, data.activePlayer, data.buying);
     this.board.fieldCenter.addMessage(message);
 
-    const id = allCells.find((el) => el.name === data.buying)?.id;
+    const cell = allCells.find((el) => el.name === data.buying);
+    if (cell) {
+      cell.owner = data.activePlayer;
+    }
+    const id = cell?.id;
 
     const elem = document.getElementById(String(id));
     if (elem) {

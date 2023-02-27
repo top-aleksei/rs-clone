@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import Control from '../../../common/common';
+import state from '../../../common/state';
 import { changeHash } from '../../controller/routing';
 import { ws } from '../../controller/socket';
 import {
@@ -109,6 +110,7 @@ class GameRoom {
         changeHash(roomId);
         const { body } = document;
         body.innerHTML = '';
+        state.activePlayer = res.payload.activePlayer;
         new Game(body, res.payload);
         // console.log(res);
       }
