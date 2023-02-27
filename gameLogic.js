@@ -15,7 +15,7 @@ module.exports.nextActivePlayer = function (game) {
 };
 
 module.exports.activePlayersCount = function (game) {
-  return game.players.filter((player) => player.active).length;
+  return game.players.filter((player) => player.active == true).length;
 };
 
 module.exports.isGameOver = function (game) {

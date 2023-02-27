@@ -617,13 +617,16 @@ function logic(req) {
 
     case 'stepend':
       gameLogic.nextActivePlayer(game);
+      if (gameLogic.isGameOver(game)) {
+        req.event = 'gameOver';
+        req.payload.winner = game.activePlayer;
+      } else game.type = 'step';
       /*
         game.activePlayerNumber =
           game.activePlayerNumber + 1 < game.players.length
             ? game.activePlayerNumber + 1
             : 0;
         game.activePlayer = game.nicknames[game.activePlayerNumber];*/
-      game.type = 'step';
 
       break;
 
@@ -637,20 +640,19 @@ function logic(req) {
       break;
     case 'leftGame':
       {
-        if (req.payload.nickname === game.activePlayer) {
+        if (gameLogic.isGameOver(game)) {
+          req.event = 'gameOver';
+          req.payload.winner = game.activePlayer;
+        } else if (req.payload.nickname === game.activePlayer) {
           /* game.activePlayerNumber =
             game.activePlayerNumber + 1 < game.players.length
               ? game.activePlayerNumber + 1
               : 0;
           game.activePlayer = game.nicknames[game.activePlayerNumber];*/
           gameLogic.nextActivePlayer(game);
-          if (gameLogic.isGameOver) {
-            req.event = 'gameOver';
-            req.payload.winner = game.activePlayer;
-          } else {
-            req.event = 'stepend';
-            game.type = 'step';
-          }
+
+          req.event = 'stepend';
+          game.type = 'step';
         }
       }
       break;
