@@ -1,4 +1,5 @@
 import Control from '../../common/common';
+import state from '../../common/state';
 
 enum BonusText {
   SMALL_MINUS = 'was robbed for',
@@ -7,7 +8,8 @@ enum BonusText {
   BIG_PLUS = 'win in superloto',
 }
 
-export function createBonusMessage(color: string, name: string, bonus: number) {
+export function createBonusMessage(color: string, bonus: number) {
+  const name = state.activePlayer;
   const elem = new Control(null, 'div', 'chat__item');
   const player = new Control(elem.node, 'span', 'chat__player', name);
   player.node.style.color = color;
@@ -26,11 +28,8 @@ export function createBonusMessage(color: string, name: string, bonus: number) {
   return elem.node;
 }
 
-export function createMessageThrow(
-  color: string,
-  name: string,
-  dice: number[],
-) {
+export function createMessageThrow(color: string, dice: number[]) {
+  const name = state.activePlayer;
   const elem = new Control(null, 'div', 'chat__item');
   const player = new Control(elem.node, 'span', 'chat__player', name);
   player.node.style.color = color;
