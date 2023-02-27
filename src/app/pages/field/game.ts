@@ -9,9 +9,11 @@ import {
 } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { Colors, GameInfo } from '../../types/game';
+import { Colors, GameInfo, Player } from '../../types/game';
 import Board from './board';
 import Players from './players';
+import state from '../../../common/state';
+import { reloadBuyPopUp } from '../../controller/reloadPopUps';
 
 class Game {
   container: Control;
@@ -68,11 +70,9 @@ class Game {
 
         // render Buy popup
         if (data.type === 'abilityToByu' && this.isActive()) {
-          const name = data.buildName;
-          const cost = data.buildCost;
           const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
           setTimeout(() => {
-            this.board.fieldCenter.renderBuyPopUp(name, cost);
+            this.board.fieldCenter.renderBuyPopUp(data);
           }, delay);
         }
         if (data.type === 'buying') {
@@ -81,52 +81,21 @@ class Game {
         if (data.type === 'bonus') {
           this.stepOnBonus(data);
         }
-        if (data.type === 'payingTax' && this.isActive()) {
-          const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
-          setTimeout(() => {
-            const messageHTML = createShouldPayMessage(
-              this.getActiveColor(),
-              data,
-            );
-            this.board.fieldCenter.addMessage(messageHTML);
-          }, delay);
-          if (data.activePlayer !== data.ownerName) {
-            setTimeout(() => {
-              this.board.fieldCenter.renderPayPopUp(data);
-            }, delay);
-          } else {
-            setTimeout(() => {
-              ws.send(
-                JSON.stringify({
-                  event: 'stepend',
-                  payload: {
-                    gameId: this.gameInfo.gameId,
-                    nickname: this.name,
-                  },
-                }),
-              );
-            }, 3000);
-          }
+        if (data.type === 'payingTax') {
+          this.payingTax(data);
         }
 
         // temp (add temp second condition)
         if (this.isActive() && data.type === 'next') {
           setTimeout(() => {
-            ws.send(
-              JSON.stringify({
-                event: 'stepend',
-                payload: {
-                  gameId: this.gameInfo.gameId,
-                  nickname: this.name,
-                },
-              }),
-            );
+            this.sendEndStep();
           }, 3000);
         }
         // temp
       } else if (res.event === 'startStep') {
         this.gameInfo.activePlayer = res.payload.activePlayer;
-        this.players.showCurrentPlayer(this.gameInfo.activePlayer);
+        state.activePlayer = res.payload.activePlayer;
+        this.players.showCurrentPlayer();
         this.activePlayerStartStep();
       } else if (res.event === 'chatMessage') {
         const info = res.payload;
@@ -143,17 +112,15 @@ class Game {
         if (this.isActive()) {
           this.sendEndStep();
         }
+      } else if (res.event === 'selling') {
+        this.sellFactory(res.payload);
       }
     });
   }
 
   stepOnBonus(data: any) {
     const color = this.getActiveColor();
-    const messageHTML = createBonusMessage(
-      color,
-      this.gameInfo.activePlayer,
-      data.bonusSize,
-    );
+    const messageHTML = createBonusMessage(color, data.bonusSize);
 
     setTimeout(() => {
       this.board.fieldCenter.addMessage(messageHTML);
@@ -162,15 +129,7 @@ class Game {
 
     if (this.isActive()) {
       setTimeout(() => {
-        ws.send(
-          JSON.stringify({
-            event: 'stepend',
-            payload: {
-              gameId: this.gameInfo.gameId,
-              nickname: this.name,
-            },
-          }),
-        );
+        this.sendEndStep();
       }, 3000);
     }
   }
@@ -180,15 +139,31 @@ class Game {
 
     const dice = [data.boneOne, data.boneTwo];
     this.board.fieldCenter.rollDiceAnimation(dice);
-    const messageHTML = createMessageThrow(
-      color,
-      this.gameInfo.activePlayer,
-      dice,
-    );
+    const messageHTML = createMessageThrow(color, dice);
     setTimeout(() => {
       this.board.moveTokens(this.gameInfo);
       this.board.fieldCenter.addMessage(messageHTML);
     }, 1200);
+  }
+
+  sellFactory(data: any) {
+    const cell = allCells.find((el) => el.name === data.selling);
+    if (cell) {
+      cell.owner = null;
+    }
+    const id = cell?.id;
+
+    const elem = document.getElementById(String(id));
+    if (elem) {
+      elem.style.backgroundColor = 'transparent';
+    }
+    this.players.rerenderMoney(data.players);
+    if (this.name === data.activePlayer) {
+      const currentMoney = data.players.find(
+        (el: Player) => el.nickname === data.activePlayer,
+      ).money;
+      reloadBuyPopUp(currentMoney);
+    }
   }
 
   buyFactory(data: any) {
@@ -196,7 +171,11 @@ class Game {
     const message = createBuyMessage(color, data.activePlayer, data.buying);
     this.board.fieldCenter.addMessage(message);
 
-    const id = allCells.find((el) => el.name === data.buying)?.id;
+    const cell = allCells.find((el) => el.name === data.buying);
+    if (cell) {
+      cell.owner = data.activePlayer;
+    }
+    const id = cell?.id;
 
     const elem = document.getElementById(String(id));
     if (elem) {
@@ -205,17 +184,29 @@ class Game {
     this.players.rerenderMoney(data.players);
 
     if (this.isActive()) {
-      ws.send(
-        JSON.stringify({
-          event: 'stepend',
-          payload: {
-            gameId: this.gameInfo.gameId,
-            nickname: this.name,
-          },
-        }),
-      );
+      this.sendEndStep();
     }
   }
+
+  payingTax(data: any) {
+    const delay = (data.boneOne + data.boneTwo) * 100 + 2200;
+    setTimeout(() => {
+      const messageHTML = createShouldPayMessage(this.getActiveColor(), data);
+      this.board.fieldCenter.addMessage(messageHTML);
+    }, delay);
+    if (this.isActive()) {
+      if (data.activePlayer !== data.ownerName) {
+        setTimeout(() => {
+          this.board.fieldCenter.renderPayPopUp(data);
+        }, delay);
+      } else {
+        setTimeout(() => {
+          this.sendEndStep();
+        }, 3000);
+      }
+    }
+  }
+
   getActiveColor() {
     return (
       this.gameInfo.players.find(
