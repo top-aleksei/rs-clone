@@ -222,7 +222,7 @@ function multicast(req) {
     games[req.payload.gameId].players.map((player, index) => {
       player.position = 1;
       player.color = colors[index];
-      player.money = 10000;
+      index == 0 ? (player.money = 10000000) : (player.money = 4000);
       player.owner = [];
       player.active = true;
     });
