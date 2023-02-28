@@ -97,12 +97,14 @@ class Games {
   loadExistGames(rooms: Room[]) {
     if (rooms.length > 0) {
       rooms.forEach((el) => {
-        const room = new GameRoom(
-          this.list.node,
-          el,
-          this.disableEnableCreation.bind(this),
-        );
-        room.renderPlayers();
+        if (el.qty !== el.nicknames.length) {
+          const room = new GameRoom(
+            this.list.node,
+            el,
+            this.disableEnableCreation.bind(this),
+          );
+          room.renderPlayers();
+        }
       });
     }
   }

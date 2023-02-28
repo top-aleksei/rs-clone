@@ -41,6 +41,16 @@ class Players {
       curPlayer.children[1].textContent = `${player.money}$`;
     });
   }
+
+  renderBankrupt(name: string) {
+    const playersDOM = this.container.node.children;
+
+    const bankrupt = [...playersDOM].find(
+      (el) => el.id === `card-${name}`,
+    ) as HTMLElement;
+    bankrupt.style.opacity = '0.3';
+    bankrupt.children[1].textContent = 'BANCKRUPT';
+  }
 }
 
 export default Players;

@@ -4,7 +4,7 @@ import { allCells } from './cellsInfo';
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
-import { GameInfo } from '../../types/game';
+import { GameInfo, Player } from '../../types/game';
 
 class CenterItem {
   container: Control;
@@ -53,6 +53,7 @@ class CenterItem {
     const container = new Control(this.container.node, 'div', 'popup');
     const rollButton = new Control(container.node, 'div', 'popup__roll');
     rollButton.node.onclick = () => {
+      container.destroy();
       const data = {
         event: 'step',
         payload: {
@@ -61,7 +62,6 @@ class CenterItem {
         },
       };
       ws.send(JSON.stringify(data));
-      container.destroy();
     };
   }
 
@@ -99,6 +99,7 @@ class CenterItem {
       accept.node.setAttribute('disabled', 'true');
     }
     accept.node.onclick = () => {
+      container.destroy();
       ws.send(
         JSON.stringify({
           event: 'buying',
@@ -109,10 +110,10 @@ class CenterItem {
           },
         }),
       );
-      container.destroy();
     };
 
     decline.node.onclick = () => {
+      container.destroy();
       ws.send(
         JSON.stringify({
           event: 'stepend',
@@ -122,29 +123,168 @@ class CenterItem {
           },
         }),
       );
-      container.destroy();
     };
   }
 
   renderPayPopUp(data: any) {
+    const playerMoney = data.players.find(
+      (el: { nickname: string }) => el.nickname === data.activePlayer,
+    ).money;
+
     const container = new Control(this.container.node, 'div', 'popup');
-    const wrapper = new Control(container.node, 'div', 'popup__message');
-    const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
-    new Control(wrapper.node, 'p', 'popup__text', text);
-    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
-    const pay = new Control(btns.node, 'button', 'popup__btn', 'PAY');
-    pay.node.onclick = () => {
+
+    const actives = this.countAllPossibleMoney(data);
+    if (actives < data.costParking) {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      new Control(
+        wrapper.node,
+        'p',
+        'popup__text',
+        'NO CHANCE. YOU ARE BANKRUPT',
+      );
       ws.send(
         JSON.stringify({
-          event: 'paying',
+          event: 'banckrot',
           payload: {
             gameId: this.gameInfo.gameId,
             nickname: this.name,
           },
         }),
       );
-      container.destroy();
+    } else {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      const text = `You are on ${data.ownerName} territory, you should pay him ${data.costParking}$`;
+      new Control(wrapper.node, 'p', 'popup__text', text);
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
+      pay.node.onclick = () => {
+        container.destroy();
+        ws.send(
+          JSON.stringify({
+            event: 'paying',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+            },
+          }),
+        );
+      };
+      pay.node.setAttribute('data-cost', data.costParking);
+      if (playerMoney < data.costParking) {
+        pay.node.setAttribute('disabled', 'true');
+        new Control(
+          wrapper.node,
+          'div',
+          'popup__description',
+          'You have not enough money, try to sell something',
+        );
+      }
+    }
+  }
+  renderBonusPopUp(data: any) {
+    const playerMoney = data.players.find(
+      (el: { nickname: string }) => el.nickname === data.activePlayer,
+    ).money;
+
+    const container = new Control(this.container.node, 'div', 'popup');
+    const actives = this.countAllPossibleMoney(data);
+    if (actives < 0) {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      new Control(
+        wrapper.node,
+        'p',
+        'popup__text',
+        'NO CHANCE. YOU ARE BANKROT',
+      );
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const left = new Control(
+        btns.node,
+        'button',
+        'popup__btn',
+        'left the game',
+      );
+      left.node.onclick = () => {
+        window.location.hash = '';
+        window.location.reload();
+      };
+      ws.send(
+        JSON.stringify({
+          event: 'banckrot',
+          payload: {
+            gameId: this.gameInfo.gameId,
+            nickname: this.name,
+          },
+        }),
+      );
+    } else if (playerMoney < 0) {
+      const wrapper = new Control(container.node, 'div', 'popup__message');
+      const text = 'You have no money, sell something to continue game';
+      new Control(wrapper.node, 'p', 'popup__text', text);
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const pay = new Control(btns.node, 'button', 'popup__btn pay', 'PAY');
+      // todo stepend
+      pay.node.onclick = () => {
+        container.destroy();
+        ws.send(
+          JSON.stringify({
+            event: 'stepend',
+            payload: {
+              gameId: this.gameInfo.gameId,
+              nickname: this.name,
+            },
+          }),
+        );
+      };
+      // todo
+      pay.node.setAttribute('data-cost', String(Math.abs(playerMoney)));
+
+      pay.node.setAttribute('disabled', 'true');
+      new Control(
+        wrapper.node,
+        'div',
+        'popup__description',
+        'You have not enough money, try to sell something',
+      );
+    }
+  }
+
+  renderWinPopUp() {
+    const container = new Control(this.container.node, 'div', 'popup');
+    const wrapper = new Control(container.node, 'div', 'popup__message');
+    new Control(
+      wrapper.node,
+      'p',
+      'popup__text',
+      'CONGRATULAION!!! You win this game!',
+    );
+    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+    const left = new Control(
+      btns.node,
+      'button',
+      'popup__btn',
+      'left the game',
+    );
+    left.node.onclick = () => {
+      window.location.hash = '';
+      window.location.reload();
     };
+  }
+
+  countAllPossibleMoney(data: any) {
+    const curPlayerName = data.activePlayer;
+    const allPlayers: Player[] = data.players;
+    const playerInfo = allPlayers.find((el) => el.nickname === curPlayerName);
+    const realMoney = playerInfo?.money || 0;
+    const owns = playerInfo?.owner || [];
+    let potentialMoney = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const val of owns) {
+      const fMoney = allCells.find((el) => el.name === val)?.costSell;
+      if (fMoney) {
+        potentialMoney += fMoney;
+      }
+    }
+    return realMoney + potentialMoney;
   }
 
   rollDiceAnimation(diceValues: number[]) {
