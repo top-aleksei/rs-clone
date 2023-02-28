@@ -2,7 +2,7 @@ import { User } from '../types/entrance';
 
 // const HOST = 'http://127.0.0.1:13500/api/users';
 //const HOST = 'http://45.82.153.155:13500/api/users';
-const HOST = 'https://mymonopoly.sytes.net:13500/api/users';
+const HOST = 'https://mymonopoly.sytes.net/api/users';
 
 export async function createUser(user: User) {
   try {
