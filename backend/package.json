@@ -1,0 +1,32 @@
+{
+  "name": "rs-clone-back",
+  "version": "1.0.0",
+  "description": "Backend for rs-clone",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nodemon": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/top-aleksei/rs-clone.git"
+  },
+  "author": "Artur Pazdniak",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "ws": "^8.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "bugs": {
+    "url": "https://github.com/top-aleksei/rs-clone/issues"
+  },
+  "homepage": "https://github.com/top-aleksei/rs-clone#readme"
+}

@@ -1,7 +1,7 @@
 import { allCells } from './cellsInfo';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import diceRoller from 'dice-roller-3d';
-
+import { allCells } from './cellsInfo';
 import Control from '../../../common/common';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
@@ -68,12 +68,13 @@ class CenterItem {
 
   renderBuyPopUp(data: any) {
     const { buildName, buildCost, activePlayer } = data;
+    const factoryName = allCells.find((el) => el.name === buildName);
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === activePlayer,
     ).money;
     const container = new Control(this.container.node, 'div', 'popup');
     const wrapper = new Control(container.node, 'div', 'popup__message');
-    const text = `Do you want to buy ${buildName} for ${buildCost}$`;
+    const text = `Do you want to buy ${factoryName?.company} for ${buildCost}$`;
     new Control(wrapper.node, 'p', 'popup__text', text);
     const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
     const accept = new Control(
