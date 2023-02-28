@@ -1,4 +1,3 @@
-import { allCells } from './cellsInfo';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import diceRoller from 'dice-roller-3d';
 import { allCells } from './cellsInfo';
