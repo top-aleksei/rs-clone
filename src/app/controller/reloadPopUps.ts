@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export function reloadBuyPopUp(myMoney: number) {
   const btn = document.querySelector('.pay');
   const description = document.querySelector('.popup__description');

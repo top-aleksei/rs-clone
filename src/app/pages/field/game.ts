@@ -4,8 +4,10 @@ import {
   createBonusMessage,
   createBuyMessage,
   createChatMessage,
+  createLeftGameMessage,
   createMessageThrow,
   createShouldPayMessage,
+  createSoldMessage,
 } from '../../controller/chat';
 import { ws } from '../../controller/socket';
 import { getNameLS } from '../../localStorage/localStorage';
@@ -115,7 +117,30 @@ class Game {
       } else if (res.event === 'selling') {
         this.sellFactory(res.payload);
       } else if (res.event === 'banckrot') {
+        this.bankruptPlayer(res.payload);
+      } else if (res.event === 'leftGame') {
         this.players.renderBankrupt(res.payload.nickname);
+        const messageHTML = createLeftGameMessage(res.payload.nickname);
+        this.board.fieldCenter.addMessage(messageHTML);
+      } else if (res.event === 'gameOver') {
+        if (res.payload.winner === this.name) {
+          this.board.fieldCenter.renderWinPopUp();
+        }
+      }
+    });
+  }
+
+  bankruptPlayer(data: any) {
+    const player = data.nickname;
+    this.players.renderBankrupt(player);
+    allCells.forEach((el) => {
+      if (el.owner === player) {
+        const domEl = document.querySelector(`#${el.id}`) as HTMLElement;
+        if (domEl) {
+          domEl.style.backgroundColor = 'transparent';
+        }
+        // eslint-disable-next-line no-param-reassign
+        el.owner = null;
       }
     });
   }
@@ -156,6 +181,9 @@ class Game {
   }
 
   sellFactory(data: any) {
+    const color = this.getActiveColor();
+    const messageHTML = createSoldMessage(color, data);
+    this.board.fieldCenter.addMessage(messageHTML);
     const cell = allCells.find((el) => el.name === data.selling);
     if (cell) {
       cell.owner = null;

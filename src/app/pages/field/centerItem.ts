@@ -51,7 +51,6 @@ class CenterItem {
   }
 
   renderThrowDicePopup() {
-    console.log('throw');
     const container = new Control(this.container.node, 'div', 'popup');
     const rollButton = new Control(container.node, 'div', 'popup__roll');
     rollButton.node.onclick = () => {
@@ -68,7 +67,6 @@ class CenterItem {
   }
 
   renderBuyPopUp(data: any) {
-    console.log('buy');
     const { buildName, buildCost, activePlayer } = data;
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === activePlayer,
@@ -129,7 +127,6 @@ class CenterItem {
   }
 
   renderPayPopUp(data: any) {
-    console.log('pay');
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === data.activePlayer,
     ).money;
@@ -143,7 +140,7 @@ class CenterItem {
         wrapper.node,
         'p',
         'popup__text',
-        'NO CHANCE. YOU ARE BANKROT',
+        'NO CHANCE. YOU ARE BANKRUPT',
       );
       ws.send(
         JSON.stringify({
@@ -185,7 +182,6 @@ class CenterItem {
     }
   }
   renderBonusPopUp(data: any) {
-    console.log('bonus');
     const playerMoney = data.players.find(
       (el: { nickname: string }) => el.nickname === data.activePlayer,
     ).money;
@@ -200,6 +196,17 @@ class CenterItem {
         'popup__text',
         'NO CHANCE. YOU ARE BANKROT',
       );
+      const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+      const left = new Control(
+        btns.node,
+        'button',
+        'popup__btn',
+        'left the game',
+      );
+      left.node.onclick = () => {
+        window.location.hash = '';
+        window.location.reload();
+      };
       ws.send(
         JSON.stringify({
           event: 'banckrot',
@@ -229,17 +236,38 @@ class CenterItem {
         );
       };
       // todo
-      pay.node.setAttribute('data-cost', data.costParking);
-      if (playerMoney < data.costParking) {
-        pay.node.setAttribute('disabled', 'true');
-        new Control(
-          wrapper.node,
-          'div',
-          'popup__description',
-          'You have not enough money, try to sell something',
-        );
-      }
+      pay.node.setAttribute('data-cost', String(Math.abs(playerMoney)));
+
+      pay.node.setAttribute('disabled', 'true');
+      new Control(
+        wrapper.node,
+        'div',
+        'popup__description',
+        'You have not enough money, try to sell something',
+      );
     }
+  }
+
+  renderWinPopUp() {
+    const container = new Control(this.container.node, 'div', 'popup');
+    const wrapper = new Control(container.node, 'div', 'popup__message');
+    new Control(
+      wrapper.node,
+      'p',
+      'popup__text',
+      'CONGRATULAION!!! You win this game!',
+    );
+    const btns = new Control(wrapper.node, 'div', 'popup__btn-line');
+    const left = new Control(
+      btns.node,
+      'button',
+      'popup__btn',
+      'left the game',
+    );
+    left.node.onclick = () => {
+      window.location.hash = '';
+      window.location.reload();
+    };
   }
 
   countAllPossibleMoney(data: any) {

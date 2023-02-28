@@ -112,7 +112,6 @@ class GameRoom {
         body.innerHTML = '';
         state.activePlayer = res.payload.activePlayer;
         new Game(body, res.payload);
-        // console.log(res);
       }
       // temp
     });

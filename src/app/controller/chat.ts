@@ -38,6 +38,13 @@ export function createMessageThrow(color: string, dice: number[]) {
   return elem.node;
 }
 
+export function createLeftGameMessage(name: string) {
+  const elem = new Control(null, 'div', 'chat__item');
+  const message = `Player "${name}" left the game`;
+  new Control(elem.node, 'span', 'chat__message', message);
+  return elem.node;
+}
+
 export function createChatMessage(
   color: string,
   name: string,
@@ -69,8 +76,20 @@ export function createShouldPayMessage(color: string, data: any) {
   if (activePlayer === ownerName) {
     message = ' stepped on his cell';
   } else {
-    message = ` stepped on ${ownerName}'s cell and should pay him ${costParking}`;
+    message = ` stepped on ${ownerName}'s cell and should pay him ${costParking}$`;
   }
+  new Control(elem.node, 'span', 'chat__message', message);
+  return elem.node;
+}
+
+export function createSoldMessage(color: string, data: any) {
+  const { activePlayer, selling, cost } = data;
+  const elem = new Control(null, 'div', 'chat__item');
+  const player = new Control(elem.node, 'span', 'chat__player', activePlayer);
+  player.node.style.color = color;
+
+  const message = ` sold "${selling}" for ${cost}$`;
+
   new Control(elem.node, 'span', 'chat__message', message);
   return elem.node;
 }
