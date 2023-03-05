@@ -16,7 +16,7 @@
 * body-parser (lib)
 * CORS(lib)
 
-## Инструцкция по запуску игры
+## Инструкция по запуску игры
 Видеоинструкция: https://www.loom.com/share/b737fe79fd5e42c1b8a4dfef93ede9a3
 1. Запустить приложение https://monopoly-clone.netlify.app/
 2. Пройти процедуру регистрации либо войти под своим именем
