@@ -1,20 +1,20 @@
 # RS-clone "Monopoly"
 ## Стэк технологий
 ### Frontend:
-*Typescript
-*SCSS
-*Webpack
-*ESLint
-*Prettier
-*dice-roller-3d (кубики)
+* Typescript
+* SCSS
+* Webpack
+* ESLint
+* Prettier
+* dice-roller-3d (кубики)
 
 ### Backend:
-*Node.js
-*MySQL
-*Express
-*ws (lib)
-*body-parser (lib)
-*CORS(lib)
+* Node.js
+* MySQL
+* Express
+* ws (lib)
+* body-parser (lib)
+* CORS(lib)
 
 ## Инструцкция по запуску игры
 Видеоинструкция: https://www.loom.com/share/b737fe79fd5e42c1b8a4dfef93ede9a3
