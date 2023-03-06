@@ -15,7 +15,7 @@
 * Webpack
 * ESLint
 * Prettier
-* dice-roller-3d (кубики)
+* dice-roller-3d (lib)
 
 ### Backend:
 * Node.js
