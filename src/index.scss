@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+// 1. Configuration and helpers
+@import 'style/abstracts/variables', 'style/abstracts/placeholders',
+  'style/abstracts/mixins';
+
+// 2. Vendors
+@import 'style/vendors/normalize';
+
+// 3. Base stuff
+@import 'style/base/base', 'style/base/fonts', 'style/base/helpers',
+  'style/base/button', 'style/base/icons';
+
+// 4. Layout-related sections
+@import 'style/layout/header', 'style/layout/footer';
+
+// 5. Components
+
+@import 'style/components/entrance', 'style/components/corner-cel',
+  'style/components/board', 'style/components/cell', 'style/components/games',
+  'style/components/room', 'style/components/popup', 'style/components/chat',
+  'style/components/dice', 'style/components/token';
+
+// 6. Page-specific styles
+@import 'style/pages/userPage';
+// 7. Themes
+@import 'style/themes/default';
